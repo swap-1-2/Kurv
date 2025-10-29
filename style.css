@@ -586,6 +586,19 @@ button {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
+/* Firebase reCAPTCHA styling */
+#recaptcha-container {
+    display: flex;
+    justify-content: center;
+    margin: 15px 0;
+}
+
+#recaptcha-container > div {
+    border-radius: 15px !important;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.1);
+}
+
 @keyframes fadeInUp {
     from {
         opacity: 0;

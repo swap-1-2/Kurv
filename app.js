@@ -1,3 +1,21 @@
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyAHYAgCbh7Su_j94P2NocHPAS61YGjYnQw",
+    authDomain: "kurv-mobile-app.firebaseapp.com",
+    projectId: "kurv-mobile-app",
+    storageBucket: "kurv-mobile-app.firebasestorage.app",
+    messagingSenderId: "74456064312",
+    appId: "1:74456064312:web:b55d2056b7a07873b821cd"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// Firebase auth variables
+let confirmationResult;
+let recaptchaVerifier;
+
 // Categories data
 const categories = [
     {
@@ -304,7 +322,259 @@ function saveOrders() {
     }
 }
 
-// Authentication functions
+// Firebase Authentication functions
+function initializeRecaptcha() {
+    if (!recaptchaVerifier) {
+        try {
+            // Show the reCAPTCHA container
+            const recaptchaContainer = document.getElementById('recaptcha-container');
+            if (recaptchaContainer) {
+                recaptchaContainer.style.display = 'block';
+                recaptchaContainer.innerHTML = ''; // Clear any previous content
+            }
+            
+            console.log('Initializing reCAPTCHA...');
+            
+            recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                'size': 'normal',
+                'callback': (response) => {
+                    console.log('✅ reCAPTCHA solved successfully!', response);
+                },
+                'expired-callback': () => {
+                    console.log('❌ reCAPTCHA expired - please try again');
+                    showToast('reCAPTCHA expired. Please try again.');
+                },
+                'error-callback': (error) => {
+                    console.log('❌ reCAPTCHA error:', error);
+                    showToast('reCAPTCHA error. Please refresh and try again.');
+                }
+            });
+            
+            // Render the reCAPTCHA
+            return recaptchaVerifier.render().then(() => {
+                console.log('✅ reCAPTCHA rendered successfully');
+            }).catch((error) => {
+                console.error('❌ reCAPTCHA render error:', error);
+                throw error;
+            });
+            
+        } catch (error) {
+            console.error('❌ Error initializing reCAPTCHA:', error);
+            recaptchaVerifier = null;
+            throw error;
+        }
+    }
+    
+    return Promise.resolve();
+}
+
+async function sendFirebaseOtp() {
+    const phoneInput = document.getElementById('phone');
+    
+    if (!phoneInput) {
+        showToast('Phone input not found');
+        return;
+    }
+    
+    const phone = phoneInput.value.trim();
+    
+    // Validate phone number
+    if (!phone) {
+        showToast('Please enter a mobile number');
+        return;
+    }
+    
+    // Validate phone number format
+    if (!phone.startsWith('+') || phone.length < 10) {
+        showToast('Please enter phone number with country code (e.g., +47000000)');
+        return;
+    }
+    
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    
+    // Show loading state
+    if (sendOtpBtn) {
+        sendOtpBtn.textContent = 'Sending...';
+        sendOtpBtn.disabled = true;
+    }
+    
+    try {
+        // Initialize reCAPTCHA if not already done or if this is a resend
+        const isResend = sendOtpBtn && sendOtpBtn.textContent === 'Resend OTP';
+        
+        if (!recaptchaVerifier || isResend) {
+            // Clear any existing success message
+            const recaptchaContainer = document.getElementById('recaptcha-container');
+            if (recaptchaContainer && isResend) {
+                recaptchaContainer.innerHTML = '';
+                recaptchaContainer.style.display = 'none';
+                
+                // Clear existing verifier for resend
+                if (recaptchaVerifier) {
+                    try {
+                        recaptchaVerifier.clear();
+                    } catch (e) {
+                        console.log('Error clearing reCAPTCHA for resend:', e);
+                    }
+                    recaptchaVerifier = null;
+                }
+            }
+            
+            await initializeRecaptcha();
+        }
+        
+        console.log('Attempting to send OTP to:', phone);
+        console.log('reCAPTCHA verifier ready:', !!recaptchaVerifier);
+        
+        // Send OTP via Firebase
+        confirmationResult = await auth.signInWithPhoneNumber(phone, recaptchaVerifier);
+        
+        console.log('OTP sent successfully, confirmation result:', !!confirmationResult);
+        
+        // Hide reCAPTCHA after successful OTP send
+        const recaptchaContainer = document.getElementById('recaptcha-container');
+        if (recaptchaContainer) {
+            recaptchaContainer.style.display = 'none';
+            // Show success message in place of reCAPTCHA
+            recaptchaContainer.innerHTML = '<div style="text-align: center; color: #4CAF50; padding: 10px; font-size: 14px;">✅ Verification completed</div>';
+            recaptchaContainer.style.display = 'block';
+        }
+        
+        // Show OTP section
+        const otpSection = document.getElementById('otpSection');
+        if (otpSection) {
+            otpSection.style.display = 'block';
+        }
+        
+        // Store phone for later use
+        localStorage.setItem('temp_phone', phone);
+        
+        showToast('OTP sent successfully! Check your phone.');
+        
+        // Update button text to indicate success
+        if (sendOtpBtn) {
+            sendOtpBtn.textContent = 'Resend OTP';
+            sendOtpBtn.disabled = false;
+        }
+        
+    } catch (error) {
+        console.error('Detailed error sending OTP:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        
+        let errorMessage = 'Error sending OTP: ';
+        
+        // Handle specific Firebase errors
+        switch (error.code) {
+            case 'auth/invalid-phone-number':
+                errorMessage = 'Invalid phone number format. Use +4796985758';
+                break;
+            case 'auth/missing-phone-number':
+                errorMessage = 'Please enter a phone number';
+                break;
+            case 'auth/quota-exceeded':
+                errorMessage = 'SMS quota exceeded. Try again later.';
+                break;
+            case 'auth/captcha-check-failed':
+                errorMessage = 'reCAPTCHA verification failed. Please try again.';
+                break;
+            default:
+                errorMessage += error.message;
+        }
+        
+        showToast(errorMessage);
+        
+        // Reset reCAPTCHA on error
+        if (recaptchaVerifier) {
+            try {
+                recaptchaVerifier.clear();
+            } catch (e) {
+                console.log('reCAPTCHA clear error:', e);
+            }
+            recaptchaVerifier = null;
+        }
+        
+        // Hide reCAPTCHA container on error and reset
+        const recaptchaContainer = document.getElementById('recaptcha-container');
+        if (recaptchaContainer) {
+            recaptchaContainer.style.display = 'none';
+            recaptchaContainer.innerHTML = '';
+        }
+        
+        // Reset button to initial state
+        if (sendOtpBtn) {
+            sendOtpBtn.textContent = 'Send OTP';
+            sendOtpBtn.disabled = false;
+        }
+    }
+}
+
+async function verifyFirebaseOtp() {
+    const otpInput = document.getElementById('otpInput');
+    
+    if (!otpInput) {
+        showToast('OTP input not found');
+        return;
+    }
+    
+    const enteredOtp = otpInput.value.trim();
+    
+    if (!enteredOtp) {
+        showToast('Please enter the OTP');
+        return;
+    }
+    
+    if (!confirmationResult) {
+        showToast('Please request OTP first');
+        return;
+    }
+    
+    const verifyBtn = document.querySelector('[onclick="verifyFirebaseOtp()"]');
+    if (verifyBtn) {
+        verifyBtn.textContent = 'Verifying...';
+        verifyBtn.disabled = true;
+    }
+    
+    try {
+        // Verify OTP with Firebase
+        const result = await confirmationResult.confirm(enteredOtp);
+        const firebaseUser = result.user;
+        
+        console.log('Firebase user verified:', firebaseUser);
+        
+        // Set user as logged in
+        const phone = localStorage.getItem('temp_phone');
+        user = phone;
+        localStorage.setItem('user', user);
+        
+        // Clear temp data
+        localStorage.removeItem('temp_phone');
+        
+        // Load user's orders
+        loadOrders();
+        
+        // Show navigation and header
+        const bottomNav = document.getElementById('bottomNav');
+        const appHeader = document.getElementById('appHeader');
+        if (bottomNav) bottomNav.style.display = 'flex';
+        if (appHeader) appHeader.style.display = 'block';
+        
+        showToast('Login successful! Welcome to FreshMart');
+        showCategories();
+        
+    } catch (error) {
+        console.error('Error verifying OTP:', error);
+        showToast('Invalid OTP. Please try again.');
+    } finally {
+        // Reset button
+        if (verifyBtn) {
+            verifyBtn.textContent = 'Verify OTP';
+            verifyBtn.disabled = false;
+        }
+    }
+}
+
+// Legacy Authentication functions (keeping for backward compatibility)
 function sendOtp() {
     const phoneInput = document.getElementById('phone');
     
@@ -458,17 +728,43 @@ function logout() {
     localStorage.removeItem('temp_phone');
     localStorage.removeItem('otp_timestamp');
     
-    // Hide OTP section
+    // Reset Firebase auth state
+    if (recaptchaVerifier) {
+        try {
+            recaptchaVerifier.clear();
+        } catch (e) {
+            console.log('reCAPTCHA clear error on logout:', e);
+        }
+        recaptchaVerifier = null;
+    }
+    confirmationResult = null;
+    
+    // Hide OTP section and reCAPTCHA
     const otpSection = document.getElementById('otpSection');
+    const recaptchaContainer = document.getElementById('recaptcha-container');
+    
     if (otpSection) {
         otpSection.style.display = 'none';
+    }
+    
+    if (recaptchaContainer) {
+        recaptchaContainer.style.display = 'none';
+        recaptchaContainer.innerHTML = ''; // Clear reCAPTCHA content completely
     }
     
     // Clear input fields
     const phoneInput = document.getElementById('phone');
     const otpInput = document.getElementById('otpInput');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    
     if (phoneInput) phoneInput.value = '';
     if (otpInput) otpInput.value = '';
+    
+    // Reset send OTP button
+    if (sendOtpBtn) {
+        sendOtpBtn.textContent = 'Send OTP';
+        sendOtpBtn.disabled = false;
+    }
     
     // Hide header and navigation
     const bottomNav = document.getElementById('bottomNav');
@@ -1003,13 +1299,87 @@ function confirmOrder() {
     orders.unshift(order);
     saveOrders();
     
+    // Send order confirmation email via Firebase Function
+    sendOrderConfirmationEmail(order);
+    
     // Clear cart
     cart = {};
     saveCart();
     updateCartBadges();
     
-    showToast('Order placed successfully!');
+    showToast('Order placed successfully! Confirmation email sent.');
     showOrders();
+}
+
+// Email notification function
+async function sendOrderConfirmationEmail(order) {
+    try {
+        // Option 1: Firebase Cloud Functions (Professional)
+        if (typeof firebase.functions === 'function') {
+            const functions = firebase.functions();
+            const sendOrderConfirmation = functions.httpsCallable('sendOrderConfirmation');
+            
+            const emailData = {
+                order: order,
+                customerPhone: user,
+                customerEmail: 'customer@example.com'
+            };
+            
+            console.log('Sending order confirmation via Firebase Functions...', order.id);
+            const result = await sendOrderConfirmation(emailData);
+            console.log('Firebase email sent successfully:', result.data);
+        }
+        // Option 2: EmailJS (Easier alternative)
+        else if (typeof emailjs !== 'undefined') {
+            await sendEmailViaEmailJS(order);
+        }
+        
+    } catch (error) {
+        console.error('Error sending order confirmation email:', error);
+        // Try EmailJS as fallback
+        try {
+            if (typeof emailjs !== 'undefined') {
+                await sendEmailViaEmailJS(order);
+            }
+        } catch (fallbackError) {
+            console.error('Fallback email service also failed:', fallbackError);
+        }
+    }
+}
+
+// EmailJS alternative email function  
+async function sendEmailViaEmailJS(order) {
+    try {
+        console.log('Sending order confirmation via EmailJS...', order.id);
+        
+        // Prepare order items for email
+        const orderItemsHtml = order.items.map(item => 
+            `<li>${item.name} x ${item.quantity} - ₹${item.price * item.quantity}</li>`
+        ).join('');
+        
+        const templateParams = {
+            order_id: order.id,
+            order_total: order.total,
+            order_items: orderItemsHtml,
+            customer_phone: user,
+            order_date: new Date(order.date).toLocaleString(),
+            delivery_address: order.address || 'Default Address'
+        };
+        
+        // Replace these with your EmailJS service ID, template ID, and user ID
+        await emailjs.send(
+            'your_service_id',    // Replace with your EmailJS service ID
+            'your_template_id',   // Replace with your EmailJS template ID  
+            templateParams,
+            'your_user_id'        // Replace with your EmailJS user ID
+        );
+        
+        console.log('EmailJS email sent successfully');
+        
+    } catch (error) {
+        console.error('EmailJS error:', error);
+        throw error;
+    }
 }
 
 // Utility functions

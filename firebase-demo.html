@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase OTP Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: 50px auto; padding: 20px; }
+        input, button { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #4285f4; color: white; border: none; cursor: pointer; }
+        button:hover { background: #3367d6; }
+        .hidden { display: none; }
+        #recaptcha-container { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h2>Firebase Phone Auth Demo</h2>
+    
+    <div id="phone-section">
+        <input type="tel" id="phone-number" placeholder="+1234567890" />
+        <div id="recaptcha-container"></div>
+        <button onclick="sendOTP()">Send OTP</button>
+    </div>
+    
+    <div id="otp-section" class="hidden">
+        <input type="text" id="otp-code" placeholder="Enter 6-digit OTP" maxlength="6" />
+        <button onclick="verifyOTP()">Verify OTP</button>
+    </div>
+    
+    <div id="result"></div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Firebase configuration (you'll get this from Firebase Console)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHYAgCbh7Su_j94P2NocHPAS61YGjYnQw",
+            authDomain: "kurv-mobile-app.firebaseapp.com",
+            projectId: "kurv-mobile-app",
+            storageBucket: "kurv-mobile-app.firebasestorage.app",
+            messagingSenderId: "74456064312",
+            appId: "1:74456064312:web:b55d2056b7a07873b821cd"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        
+        let confirmationResult;
+        
+        // Setup reCAPTCHA
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+            'size': 'normal',
+            'callback': (response) => {
+                console.log('reCAPTCHA solved');
+            }
+        });
+        
+        // Send OTP
+        async function sendOTP() {
+            const phoneNumber = document.getElementById('phone-number').value;
+            const appVerifier = window.recaptchaVerifier;
+            
+            console.log('Attempting to send OTP to:', phoneNumber);
+            
+            try {
+                confirmationResult = await auth.signInWithPhoneNumber(phoneNumber, appVerifier);
+                console.log('Firebase confirmation result:', confirmationResult);
+                
+                document.getElementById('phone-section').classList.add('hidden');
+                document.getElementById('otp-section').classList.remove('hidden');
+                document.getElementById('result').innerHTML = `
+                    <p style="color: green;">OTP sent successfully!</p>
+                    <p style="color: blue; font-size: 12px;">
+                        📱 Check your phone: ${phoneNumber}<br>
+                        🔧 If no SMS received, check Firebase test numbers
+                    </p>
+                `;
+            } catch (error) {
+                console.error('Error sending OTP:', error);
+                document.getElementById('result').innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+            }
+        }
+        
+        // Verify OTP
+        async function verifyOTP() {
+            const code = document.getElementById('otp-code').value;
+            
+            try {
+                const result = await confirmationResult.confirm(code);
+                const user = result.user;
+                document.getElementById('result').innerHTML = '<p style="color: green;">Phone verified! User: ' + user.phoneNumber + '</p>';
+            } catch (error) {
+                console.error('Error verifying OTP:', error);
+                document.getElementById('result').innerHTML = '<p style="color: red;">Invalid OTP. Please try again.</p>';
+            }
+        }
+    </script>
+</body>
+</html>

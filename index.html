@@ -3,9 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GroceryKart - Mobile Shopping</title>
+    <title>FreshMart - Groceries delivered at home</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+    
+    <!-- EmailJS (Alternative email service) -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
 <body>
     <!-- Header with Cart Icon -->
@@ -33,16 +41,19 @@
                     </div>
                     
                     <div class="auth-form">
-                        <input type="tel" id="phone" placeholder="Enter Mobile Number" class="phone-input-fluid" maxlength="15">
+                        <input type="tel" id="phone" placeholder="Enter Mobile Number (+47000000)" class="phone-input-fluid" maxlength="15">
                         
-                        <button type="button" onclick="sendOtp()" class="send-otp-btn-fluid" id="sendOtpBtn">
+                        <!-- reCAPTCHA container - hidden initially -->
+                        <div id="recaptcha-container" style="margin: 15px 0; display: none;"></div>
+                        
+                        <button type="button" onclick="sendFirebaseOtp()" class="send-otp-btn-fluid" id="sendOtpBtn">
                             Send OTP
                         </button>
                         
                         <div id="otpSection" class="otp-section-fluid" style="display: none;">
-                            <p class="otp-display-fluid">Your OTP: <span id="otpCode"></span></p>
+                            <p class="otp-display-fluid">Enter the OTP sent to your phone</p>
                             <input type="text" id="otpInput" placeholder="Enter 6-digit OTP" maxlength="6" class="otp-input-fluid">
-                            <button type="button" onclick="verifyOtp()" class="verify-otp-btn-fluid">
+                            <button type="button" onclick="verifyFirebaseOtp()" class="verify-otp-btn-fluid">
                                 Verify OTP
                             </button>
                         </div>
