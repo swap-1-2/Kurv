@@ -1233,6 +1233,25 @@ function placeOrder() {
         return;
     }
     
+    // Validate email
+    const customerEmail = document.getElementById('customerEmail').value.trim();
+    if (!customerEmail) {
+        showToast('Please enter your email address');
+        document.getElementById('customerEmail').focus();
+        return;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(customerEmail)) {
+        showToast('Please enter a valid email address');
+        document.getElementById('customerEmail').focus();
+        return;
+    }
+    
+    // Store email for later use
+    window.customerEmail = customerEmail;
+    
     // Show address form before placing order
     showAddress();
 }
@@ -1322,7 +1341,7 @@ async function sendOrderConfirmationEmail(order) {
             const emailData = {
                 order: order,
                 customerPhone: user,
-                customerEmail: 'customer@example.com'
+                customerEmail: window.customerEmail || 'customer@example.com'
             };
             
             console.log('Sending order confirmation via Firebase Functions...', order.id);
