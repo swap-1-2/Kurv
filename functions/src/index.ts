@@ -36,8 +36,8 @@ export const sendOrderConfirmation = functions.https.onCall(
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
+          user: "swapnil29joshi@gmail.com",
+          pass: "pzyv jdbl flyf sybm",
         },
       });
 
@@ -120,16 +120,81 @@ export const sendOrderConfirmation = functions.https.onCall(
       </div>
     `;
 
-      // Email options
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: process.env.EMAIL_USER, // Send to yourself
-        subject: `🛒 New Order #${order.id} - ₹${order.total}`,
+      // Send email to business owner
+      const businessEmailOptions = {
+        from: "swapnil29joshi@gmail.com",
+        to: "swapnil29joshi@gmail.com",
+        subject: `🛒 New Order Received #${order.id} - ₹${order.total}`,
         html: htmlContent,
       };
 
-      // Send email
-      await transporter.sendMail(mailOptions);
+      // Send email to customer
+      const customerEmailOptions = {
+        from: "swapnil29joshi@gmail.com",
+        to: data.customerEmail,
+        subject: `✅ Order Confirmation #${order.id} - ₹${order.total}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; 
+            margin: 0 auto;">
+            <h2 style="color: #667eea;">✅ Order Confirmed!</h2>
+            
+            <p>Dear Customer,</p>
+            <p>Thank you for your order! We've received your order and will 
+              process it shortly.</p>
+            
+            <div style="background: #f8f9ff; padding: 20px; 
+              border-radius: 10px; margin: 20px 0;">
+              <h3>Order Details</h3>
+              <p><strong>Order ID:</strong> ${order.id}</p>
+              <p><strong>Order Date:</strong> 
+                ${new Date(order.date).toLocaleString()}
+              </p>
+              <p><strong>Phone:</strong> ${customerPhone}</p>
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; 
+              margin: 20px 0;">
+              <thead>
+                <tr style="background: #667eea; color: white;">
+                  <th style="padding: 12px; text-align: left;">Item</th>
+                  <th style="padding: 12px; text-align: center;">Qty</th>
+                  <th style="padding: 12px; text-align: right;">Price</th>
+                  <th style="padding: 12px; text-align: right;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${orderItemsHtml}
+              </tbody>
+              <tfoot>
+                <tr style="background: #f0f0f0; font-weight: bold;">
+                  <td colspan="3" style="padding: 15px; text-align: right;">
+                    Total Amount:
+                  </td>
+                  <td style="padding: 15px; text-align: right; color: #667eea;">
+                    ₹${order.total}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; 
+              margin: 20px 0;">
+              <p style="margin: 0; color: #2d5a2d;">
+                📞 We'll contact you at <strong>${customerPhone}</strong> 
+                for delivery confirmation.
+              </p>
+            </div>
+
+            <p style="color: #666; font-size: 14px;">
+              Thank you for choosing Kurv! 🛒
+            </p>
+          </div>
+        `,
+      };
+
+      // Send emails to both business owner and customer
+      await transporter.sendMail(businessEmailOptions);
+      await transporter.sendMail(customerEmailOptions);
 
       console.log("Order confirmation email sent successfully",
         {orderId: order.id});
