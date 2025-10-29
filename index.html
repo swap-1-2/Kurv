@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryKart - Mobile Shopping</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header with Cart Icon -->
+    <header class="header" id="appHeader" style="display: none;">
+        <div class="header-container">
+            <h1 class="logo">
+                <i class="fas fa-shopping-basket"></i>
+                GroceryKart
+            </h1>
+            <div class="cart-icon-container" onclick="requireAuth(showCart)">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-badge" id="cartBadge">0</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" id="app">
+        <!-- Combined Launch & Auth Screen -->
+        <section id="launch" class="section">
+            <div class="launch-screen">
+                <div class="launch-content">
+                    <div class="company-branding">
+                        <h1 class="company-name">FreshMart</h1>
+                        <h2 class="main-slogan">Groceries delivered at home</h2>
+                    </div>
+                    
+                    <div class="auth-form">
+                        <input type="tel" id="phone" placeholder="Enter Mobile Number" class="phone-input-fluid" maxlength="15">
+                        
+                        <button type="button" onclick="sendOtp()" class="send-otp-btn-fluid" id="sendOtpBtn">
+                            Send OTP
+                        </button>
+                        
+                        <div id="otpSection" class="otp-section-fluid" style="display: none;">
+                            <p class="otp-display-fluid">Your OTP: <span id="otpCode"></span></p>
+                            <input type="text" id="otpInput" placeholder="Enter 6-digit OTP" maxlength="6" class="otp-input-fluid">
+                            <button type="button" onclick="verifyOtp()" class="verify-otp-btn-fluid">
+                                Verify OTP
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="terms-text">
+                        By continuing, you agree to our <a href="#" class="terms-link">Terms of Service</a> & <a href="#" class="terms-link">Privacy Policy</a>.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hidden Auth Section (not used anymore) -->
+        <section id="auth" class="section hidden" style="display: none;">
+        </section>
+
+        <!-- Categories Section -->
+        <section id="categories" class="section">
+            <div class="modern-header">
+                <div class="header-content">
+                    <div>
+                        <h1 class="header-title">Shop by Category</h1>
+                        <p class="header-subtitle">Choose from our wide range of products</p>
+                    </div>
+                    <div class="view-toggle">
+                        <button class="view-btn active" id="categoryGridViewBtn" onclick="setCategoryViewMode('grid')">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn" id="categoryListViewBtn" onclick="setCategoryViewMode('list')">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="categories-grid" id="categoryGrid"></div>
+        </section>
+
+        <!-- Catalog Section -->
+        <section id="catalog" class="section hidden">
+            <div class="modern-header">
+                <div class="header-content">
+                    <button class="back-btn" onclick="showCategories()">
+                        <i class="fas fa-arrow-left"></i>
+                        Back
+                    </button>
+                    <div class="view-toggle">
+                        <button class="view-btn active" id="gridViewBtn" onclick="setViewMode('grid')">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn" id="listViewBtn" onclick="setViewMode('list')">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="header-title" id="catalogTitle">Products</h1>
+                    <p class="header-subtitle" id="catalogSubtitle">Fresh and quality products</p>
+                </div>
+            </div>
+            <div class="catalog-grid" id="catalogGrid"></div>
+        </section>
+
+        <!-- Cart Section -->
+        <section id="cart" class="section hidden">
+            <div class="modern-header">
+                <div class="header-content">
+                    <button class="back-btn" onclick="showCategories()">
+                        <i class="fas fa-arrow-left"></i>
+                        Back
+                    </button>
+                </div>
+                <div>
+                    <h1 class="header-title"><i class="fas fa-shopping-cart"></i> Your Cart</h1>
+                    <p class="header-subtitle">Review your items before checkout</p>
+                </div>
+            </div>
+            <div id="cartItems" class="cart-items"></div>
+            <div class="cart-summary">
+                <div class="total-amount">
+                    <strong>Total: <span id="cartTotal">0.00</span> kr</strong>
+                </div>
+                <button onclick="placeOrder()" class="btn-primary place-order-btn">
+                    <i class="fas fa-credit-card"></i> Place Order
+                </button>
+            </div>
+        </section>
+
+        <!-- Address Section -->
+        <section id="address" class="section hidden">
+            <div class="modern-header">
+                <div class="header-content">
+                    <button class="back-btn" onclick="showCart()">
+                        <i class="fas fa-arrow-left"></i>
+                        Back
+                    </button>
+                </div>
+                <div>
+                    <h1 class="header-title"><i class="fas fa-map-marker-alt"></i> Delivery Address</h1>
+                    <p class="header-subtitle">Enter your delivery details</p>
+                </div>
+            </div>
+            <div class="address-form">
+                <div class="form-section">
+                    <h3>Contact Information</h3>
+                    <input type="text" id="fullName" placeholder="Full Name *" required>
+                    <input type="tel" id="deliveryPhone" placeholder="Mobile Number *" required>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Delivery Address</h3>
+                    <input type="text" id="streetAddress" placeholder="Street Address *" required>
+                    <input type="text" id="city" placeholder="City *" required>
+                    <input type="text" id="postalCode" placeholder="Postal Code *" required>
+                    <input type="text" id="landmark" placeholder="Landmark (Optional)">
+                    <select id="addressType">
+                        <option value="home">Home</option>
+                        <option value="work">Work</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <button onclick="confirmOrder()" class="btn-primary order-confirm-btn">
+                    <i class="fas fa-check-circle"></i> Confirm Order
+                </button>
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <section id="orders" class="section hidden">
+            <div class="modern-header">
+                <div class="header-content">
+                    <button class="back-btn" onclick="showCategories()">
+                        <i class="fas fa-arrow-left"></i>
+                        Back
+                    </button>
+                </div>
+                <div>
+                    <h1 class="header-title"><i class="fas fa-receipt"></i> My Orders</h1>
+                    <p class="header-subtitle">Track your order history</p>
+                </div>
+            </div>
+            <div id="ordersList" class="orders-list"></div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile" class="section hidden">
+            <div class="modern-header">
+                <div class="header-content">
+                    <button class="back-btn" onclick="showCategories()">
+                        <i class="fas fa-arrow-left"></i>
+                        Back
+                    </button>
+                </div>
+                <div>
+                    <h1 class="header-title"><i class="fas fa-user"></i> My Profile</h1>
+                    <p class="header-subtitle">Manage your account information</p>
+                </div>
+            </div>
+            <div class="profile-content">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="profileName">User Name</h2>
+                            <p id="profilePhone">Phone Number</p>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-details">
+                        <div class="detail-item">
+                            <i class="fas fa-phone"></i>
+                            <div class="detail-content">
+                                <label>Mobile Number</label>
+                                <span id="profileMobile">+91 XXXXXXXXXX</span>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <i class="fas fa-envelope"></i>
+                            <div class="detail-content">
+                                <label>Email ID</label>
+                                <span id="profileEmail">user@example.com</span>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div class="detail-content">
+                                <label>Default Address</label>
+                                <span id="profileAddress">No address saved</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-actions">
+                        <button onclick="editProfile()" class="btn-secondary">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                        <button onclick="logout()" class="btn-danger">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="bottom-nav" id="bottomNav" style="display: none;">
+        <button onclick="showCategories()" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </button>
+        <button onclick="requireAuth(showCart)" class="nav-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+            <span class="nav-badge" id="navCartBadge">0</span>
+        </button>
+        <button onclick="requireAuth(showOrders)" class="nav-item">
+            <i class="fas fa-receipt"></i>
+            <span>Orders</span>
+        </button>
+        <button onclick="requireAuth(showProfile)" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+
+    <script src="app.js"></script>
+</body>
+</html>
