@@ -425,11 +425,15 @@ async function sendFirebaseOtp() {
         
         console.log('Attempting to send OTP to:', phone);
         console.log('reCAPTCHA verifier ready:', !!recaptchaVerifier);
+        console.log('Firebase auth instance:', !!auth);
+        console.log('Phone format check:', phone.startsWith('+') ? 'Valid format' : 'Invalid format');
         
         // Send OTP via Firebase
+        console.log('Calling signInWithPhoneNumber...');
         confirmationResult = await auth.signInWithPhoneNumber(phone, recaptchaVerifier);
         
         console.log('OTP sent successfully, confirmation result:', !!confirmationResult);
+        console.log('Confirmation result details:', confirmationResult);
         
         // Hide reCAPTCHA after successful OTP send
         const recaptchaContainer = document.getElementById('recaptcha-container');
