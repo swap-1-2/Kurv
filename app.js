@@ -563,7 +563,7 @@ async function verifyFirebaseOtp() {
         if (bottomNav) bottomNav.style.display = 'flex';
         if (appHeader) appHeader.style.display = 'block';
         
-        showToast('Login successful! Welcome to FreshMart');
+        showToast('Login successful! Welcome to Kurv');
         showCategories();
         
     } catch (error) {
@@ -713,7 +713,7 @@ function verifyOtp() {
         if (bottomNav) bottomNav.style.display = 'flex';
         if (appHeader) appHeader.style.display = 'block';
         
-        showToast('Login successful! Welcome to FreshMart');
+        showToast('Login successful! Welcome to Kurv');
         showCategories();
     } else {
         showToast('Invalid OTP. Please try again');

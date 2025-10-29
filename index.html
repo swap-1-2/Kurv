@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreshMart - Groceries delivered at home</title>
+    <title>Kurv - Handlevarer levert hjem</title>
+    <meta name="description" content="Kurv - Din norske handlekurv. Ferske varer levert hjem til deg.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23ff6b6b'/><text x='50' y='60' text-anchor='middle' font-size='45' fill='white'>🛒</text></svg>">
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
@@ -36,12 +38,19 @@
             <div class="launch-screen">
                 <div class="launch-content">
                     <div class="company-branding">
-                        <h1 class="company-name">FreshMart</h1>
-                        <h2 class="main-slogan">Groceries delivered at home</h2>
+                        <div class="logo-container">
+                            <div class="logo-icon">
+                                <i class="fas fa-shopping-basket"></i>
+                                <div class="logo-accent"></div>
+                            </div>
+                            <h1 class="company-name">Kurv</h1>
+                        </div>
+                        <h2 class="main-slogan">Handlevarer levert hjem</h2>
+                        <p class="tagline">Din norske handlekurv</p>
                     </div>
                     
                     <div class="auth-form">
-                        <input type="tel" id="phone" placeholder="Enter Mobile Number (+47000000)" class="phone-input-fluid" maxlength="15">
+                        <input type="tel" id="phone" placeholder="Skriv inn mobilnummer (+47000000)" class="phone-input-fluid" maxlength="15">
                         
                         <!-- reCAPTCHA container - hidden initially -->
                         <div id="recaptcha-container" style="margin: 15px 0; display: none;"></div>
@@ -51,8 +60,8 @@
                         </button>
                         
                         <div id="otpSection" class="otp-section-fluid" style="display: none;">
-                            <p class="otp-display-fluid">Enter the OTP sent to your phone</p>
-                            <input type="text" id="otpInput" placeholder="Enter 6-digit OTP" maxlength="6" class="otp-input-fluid">
+                            <p class="otp-display-fluid">Skriv inn OTP sendt til telefonen din</p>
+                            <input type="text" id="otpInput" placeholder="Skriv inn 6-sifret OTP" maxlength="6" class="otp-input-fluid">
                             <button type="button" onclick="verifyFirebaseOtp()" class="verify-otp-btn-fluid">
                                 Verify OTP
                             </button>
@@ -75,8 +84,8 @@
             <div class="modern-header">
                 <div class="header-content">
                     <div>
-                        <h1 class="header-title">Shop by Category</h1>
-                        <p class="header-subtitle">Choose from our wide range of products</p>
+                        <h1 class="header-title">Velg Kategori</h1>
+                        <p class="header-subtitle">Velg fra vårt brede utvalg av produkter</p>
                     </div>
                     <div class="view-toggle">
                         <button class="view-btn active" id="categoryGridViewBtn" onclick="setCategoryViewMode('grid')">
@@ -109,8 +118,8 @@
                     </div>
                 </div>
                 <div>
-                    <h1 class="header-title" id="catalogTitle">Products</h1>
-                    <p class="header-subtitle" id="catalogSubtitle">Fresh and quality products</p>
+                    <h1 class="header-title" id="catalogTitle">Produkter</h1>
+                    <p class="header-subtitle" id="catalogSubtitle">Ferske og kvalitetsprodukter</p>
                 </div>
             </div>
             <div class="catalog-grid" id="catalogGrid"></div>
@@ -126,8 +135,8 @@
                     </button>
                 </div>
                 <div>
-                    <h1 class="header-title"><i class="fas fa-shopping-cart"></i> Your Cart</h1>
-                    <p class="header-subtitle">Review your items before checkout</p>
+                    <h1 class="header-title"><i class="fas fa-shopping-cart"></i> Din Handlekurv</h1>
+                    <p class="header-subtitle">Se gjennom varene dine før bestilling</p>
                 </div>
             </div>
             <div id="cartItems" class="cart-items"></div>
@@ -158,8 +167,8 @@
                     </button>
                 </div>
                 <div>
-                    <h1 class="header-title"><i class="fas fa-map-marker-alt"></i> Delivery Address</h1>
-                    <p class="header-subtitle">Enter your delivery details</p>
+                    <h1 class="header-title"><i class="fas fa-map-marker-alt"></i> Leveringsadresse</h1>
+                    <p class="header-subtitle">Skriv inn leveringsdetaljer</p>
                 </div>
             </div>
             <div class="address-form">
@@ -198,8 +207,8 @@
                     </button>
                 </div>
                 <div>
-                    <h1 class="header-title"><i class="fas fa-receipt"></i> My Orders</h1>
-                    <p class="header-subtitle">Track your order history</p>
+                    <h1 class="header-title"><i class="fas fa-receipt"></i> Mine Bestillinger</h1>
+                    <p class="header-subtitle">Spor bestillingshistorikken din</p>
                 </div>
             </div>
             <div id="ordersList" class="orders-list"></div>
@@ -215,8 +224,8 @@
                     </button>
                 </div>
                 <div>
-                    <h1 class="header-title"><i class="fas fa-user"></i> My Profile</h1>
-                    <p class="header-subtitle">Manage your account information</p>
+                    <h1 class="header-title"><i class="fas fa-user"></i> Min Profil</h1>
+                    <p class="header-subtitle">Administrer kontoinformasjonen din</p>
                 </div>
             </div>
             <div class="profile-content">
@@ -274,20 +283,20 @@
     <nav class="bottom-nav" id="bottomNav" style="display: none;">
         <button onclick="showCategories()" class="nav-item">
             <i class="fas fa-home"></i>
-            <span>Home</span>
+            <span>Hjem</span>
         </button>
         <button onclick="requireAuth(showCart)" class="nav-item">
             <i class="fas fa-shopping-cart"></i>
-            <span>Cart</span>
+            <span>Kurv</span>
             <span class="nav-badge" id="navCartBadge">0</span>
         </button>
         <button onclick="requireAuth(showOrders)" class="nav-item">
             <i class="fas fa-receipt"></i>
-            <span>Orders</span>
+            <span>Bestillinger</span>
         </button>
         <button onclick="requireAuth(showProfile)" class="nav-item">
             <i class="fas fa-user"></i>
-            <span>Profile</span>
+            <span>Profil</span>
         </button>
     </nav>
 

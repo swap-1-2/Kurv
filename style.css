@@ -456,21 +456,94 @@ button {
     margin-bottom: 4rem;
 }
 
-.company-name {
-    font-size: 3.5rem;
-    font-weight: 300;
+/* Norwegian-inspired Kurv Logo */
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.logo-icon {
+    position: relative;
+    margin-right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(145deg, #ff6b6b, #ee5a24);
+    border-radius: 16px;
+    box-shadow: 
+        0 8px 25px rgba(255, 107, 107, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.logo-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 12px 35px rgba(255, 107, 107, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.logo-icon i {
+    font-size: 28px;
     color: white;
-    margin: 0 0 1.5rem 0;
-    letter-spacing: -2px;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.logo-accent {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(145deg, #ffd32a, #ff9800);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(255, 211, 42, 0.4);
+}
+
+.company-name {
+    font-size: 3.8rem;
+    font-weight: 200;
+    color: white;
+    margin: 0;
+    letter-spacing: -1px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    text-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.company-name::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, #ff6b6b, #ffd32a);
+    border-radius: 1px;
 }
 
 .main-slogan {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 300;
-    color: rgba(255, 255, 255, 0.9);
-    margin: 0;
+    color: rgba(255, 255, 255, 0.95);
+    margin: 1.5rem 0 0.5rem 0;
     line-height: 1.4;
+    letter-spacing: 0.5px;
+}
+
+.tagline {
+    font-size: 1rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    font-style: italic;
+    letter-spacing: 0.3px;
 }
 
 .auth-form {
@@ -2002,6 +2075,37 @@ button {
     
     .company-branding {
         margin-bottom: 3rem;
+    }
+    
+    /* Mobile Kurv Logo Adjustments */
+    .logo-container {
+        margin-bottom: 1.5rem;
+    }
+    
+    .logo-icon {
+        width: 50px;
+        height: 50px;
+        margin-right: 0.8rem;
+        border-radius: 14px;
+    }
+    
+    .logo-icon i {
+        font-size: 24px;
+    }
+    
+    .logo-accent {
+        width: 14px;
+        height: 14px;
+        top: -2px;
+        right: -2px;
+    }
+    
+    .company-name {
+        font-size: 3rem;
+    }
+    
+    .tagline {
+        font-size: 0.9rem;
     }
     
     .modern-header {
