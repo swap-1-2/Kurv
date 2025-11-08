@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kurv Admin Panel</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .admin-header {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        .admin-header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .admin-header p {
+            color: #666;
+            font-size: 18px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+        }
+        
+        .stat-card i {
+            font-size: 40px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 18px 30px;
+            background: #f7fafc;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .tab-btn:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .tab-btn i {
+            font-size: 20px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-section {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .form-section h2 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .form-section h2 i {
+            color: #667eea;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #48bb78;
+            color: white;
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+            box-shadow: 0 3px 10px rgba(245, 101, 101, 0.3);
+        }
+        
+        .btn-danger:hover {
+            background: #e53e3e;
+            transform: translateY(-2px);
+        }
+        
+        .data-table {
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .data-table h3 {
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            width: 100%;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+        }
+        
+        .data-table table {
+            width: 100%;
+            min-width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        
+        .data-table th {
+            background: #f7fafc;
+            color: #333;
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        
+        .data-table th:nth-child(1) { width: 10%; }
+        .data-table th:nth-child(2) { width: 15%; }
+        .data-table th:nth-child(3) { width: 8%; }
+        .data-table th:nth-child(4) { width: 30%; }
+        .data-table th:nth-child(5) { width: 10%; }
+        .data-table th:nth-child(6) { width: 15%; }
+        
+        .data-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #555;
+            font-size: 13px;
+        }
+        
+        .data-table tr:hover {
+            background: #f7fafc;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        
+        .empty-state p {
+            font-size: 18px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+        
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            border: 3px solid white;
+            margin: auto;
+        }
+        
+        .icon-preview {
+            font-size: 28px;
+            text-align: center;
+        }
+        
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .toast {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: white;
+            color: #333;
+            padding: 20px 30px;
+            border-radius: 15px;
+            z-index: 10000;
+            animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 600;
+            min-width: 300px;
+        }
+        
+        .toast.success {
+            border-left: 5px solid #48bb78;
+        }
+        
+        .toast.error {
+            border-left: 5px solid #f56565;
+        }
+        
+        .toast i {
+            font-size: 24px;
+        }
+        
+        .toast.success i {
+            color: #48bb78;
+        }
+        
+        .toast.error i {
+            color: #f56565;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .admin-header {
+                padding: 20px;
+            }
+            
+            .admin-header h1 {
+                font-size: 24px;
+            }
+            
+            .admin-header p {
+                font-size: 14px;
+            }
+            
+            .admin-tabs {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .stat-number {
+                font-size: 28px;
+            }
+            
+            .form-section h2 {
+                font-size: 20px;
+            }
+            
+            /* Mobile table - Card layout */
+            .data-table table {
+                min-width: 100%;
+            }
+            
+            .data-table thead {
+                display: none;
+            }
+            
+            .data-table tbody tr {
+                display: block;
+                margin-bottom: 20px;
+                border: 2px solid #e2e8f0;
+                border-radius: 10px;
+                background: white;
+                padding: 15px;
+            }
+            
+            .data-table tbody td {
+                display: block;
+                text-align: left;
+                padding: 10px 0;
+                border: none;
+            }
+            
+            .data-table tbody td:before {
+                content: attr(data-label);
+                font-weight: bold;
+                text-transform: uppercase;
+                font-size: 11px;
+                color: #667eea;
+                display: block;
+                margin-bottom: 5px;
+            }
+            
+            .data-table tbody td.action-buttons {
+                margin-top: 10px;
+                padding-top: 15px;
+                border-top: 1px solid #e2e8f0;
+            }
+            
+            .data-table tbody td.action-buttons:before {
+                content: "Actions";
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons button {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .admin-header {
+                padding: 15px;
+            }
+            
+            .admin-header h1 {
+                font-size: 20px;
+            }
+            
+            .stat-card i {
+                font-size: 30px;
+            }
+            
+            .stat-number {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 10px;">
+                <img src="swarup-logo.png" alt="Swarup" style="height: 60px; object-fit: contain;">
+                <h1 style="margin: 0;">Swati Enterprises Admin Panel</h1>
+            </div>
+            <p>Manage your products, categories, and orders with ease</p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-th-large"></i>
+                    <div class="stat-number" id="totalCategories">0</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-box"></i>
+                    <div class="stat-number" id="totalProducts">0</div>
+                    <div class="stat-label">Products</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-shopping-cart"></i>
+                    <div class="stat-number" id="totalOrders">0</div>
+                    <div class="stat-label">Orders</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-tabs">
+            <button class="tab-btn active" onclick="switchTab('categories')">
+                <i class="fas fa-th"></i> Categories
+            </button>
+            <button class="tab-btn" onclick="switchTab('products')">
+                <i class="fas fa-box"></i> Products
+            </button>
+            <button class="tab-btn" onclick="switchTab('orders')">
+                <i class="fas fa-receipt"></i> Orders
+            </button>
+        </div>
+        
+        <!-- Categories Tab -->
+        <div id="categories-tab" class="tab-content active">
+            <div class="form-section">
+                                <h2><i class="fas fa-th-large"></i> Add/Edit Category</h2>
+                <form id="categoryForm" onsubmit="saveCategory(event)">
+                    <input type="hidden" id="categoryEditId" value="">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Category ID *</label>
+                            <input type="text" id="categoryId" placeholder="e.g., fruits" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category Name</label>
+                            <input type="text" id="categoryName" placeholder="e.g., Fruits & Vegetables">
+                        </div>
+                        <div class="form-group">
+                            <label>Icon (Emoji)</label>
+                            <input type="text" id="categoryIcon" placeholder="🥬" maxlength="2">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input type="text" id="categoryDescription" placeholder="Fresh Produce">
+                        </div>
+                        <div class="form-group">
+                            <label>Color</label>
+                            <input type="color" id="categoryColor" value="#4CAF50">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="categorySaveBtn">
+                        <i class="fas fa-plus"></i> Add Category
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="categoryCancelBtn" style="display: none;" onclick="cancelCategoryEdit()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </form>
+            </div>
+            
+            <div class="data-table">
+                <h3><i class="fas fa-th-large"></i> All Categories</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Icon</th>
+                                <th>Description</th>
+                                <th>Color</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoriesTableBody">
+                            <tr>
+                                <td colspan="6" class="loading-spinner">
+                                    <div class="spinner"></div>
+                                    <p style="margin-top: 15px;">Loading categories...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Products Tab -->
+        <div id="products-tab" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-box-open"></i> Add/Edit Product</h2>
+                <form id="productForm" onsubmit="saveProduct(event)">
+                    <input type="hidden" id="productEditId" value="">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Item Number *</label>
+                            <input type="text" id="productItemNumber" placeholder="e.g., ITM-001" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="productCategory">
+                                <option value="">Select Category</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Sub Category</label>
+                            <input type="text" id="productSubCategory" placeholder="e.g., Fresh Fruits, Citrus">
+                        </div>
+                        <div class="form-group">
+                            <label>Product Name</label>
+                            <input type="text" id="productName" placeholder="e.g., Organic Banana">
+                        </div>
+                        <div class="form-group">
+                            <label>Make</label>
+                            <input type="text" id="productMake" placeholder="e.g., Brand or Manufacturer">
+                        </div>
+                        <div class="form-group">
+                            <label>Specification</label>
+                            <input type="text" id="productSpecification" placeholder="e.g., Premium Quality, Grade A">
+                        </div>
+                        <div class="form-group">
+                            <label>Price (₹)</label>
+                            <input type="number" id="productPrice" step="0.01" placeholder="25.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Product UOM Code</label>
+                            <input type="text" id="productUOM" placeholder="e.g., KG, L, PC, PK">
+                            <small style="color: #666; margin-top: 5px; display: block;">
+                                Enter unit of measure (KG, G, L, ML, PC, PK, BX, DZ, EA, etc.)
+                            </small>
+                        </div>
+                        <div class="form-group">
+                            <label>Unit Quantity</label>
+                            <input type="text" id="productUnitQty" placeholder="e.g., 1, 500g, 1L">
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Image URL (or Emoji)</label>
+                            <input type="text" id="productImage" placeholder="https://example.com/image.jpg or 🍌">
+                            <small style="color: #666; margin-top: 5px; display: block;">
+                                Enter an image URL or emoji. If URL, image will be displayed. Otherwise, emoji will be used.
+                            </small>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="productSaveBtn">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="productCancelBtn" style="display: none;" onclick="cancelProductEdit()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </form>
+            </div>
+            
+            <div class="data-table">
+                <h3><i class="fas fa-boxes"></i> All Products</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item Number</th>
+                                <th>Category</th>
+                                <th>Sub Category</th>
+                                <th>Name</th>
+                                <th>Make</th>
+                                <th>Specification</th>
+                                <th>Price</th>
+                                <th>UOM</th>
+                                <th>Image</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <tr>
+                                <td colspan="10" class="loading-spinner">
+                                    <div class="spinner"></div>
+                                    <p style="margin-top: 15px;">Loading products...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Orders Tab -->
+        <div id="orders-tab" class="tab-content">
+            <div class="data-table">
+                <h3><i class="fas fa-receipt"></i> All Orders</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <tr>
+                                <td colspan="6" class="loading-spinner">
+                                    <div class="spinner"></div>
+                                    <p style="margin-top: 15px;">Loading orders...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="admin.js"></script>
+</body>
+</html>
