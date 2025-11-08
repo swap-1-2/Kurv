@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kurv - Handlevarer levert hjem</title>
-    <meta name="description" content="Kurv - Din norske handlekurv. Ferske varer levert hjem til deg.">
+    <title>Swati Enterprises - Listen | Think | Resolve</title>
+    <meta name="description" content="Swati Enterprises - Your trusted partner for quality products.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23ff6b6b'/><text x='50' y='60' text-anchor='middle' font-size='45' fill='white'>🛒</text></svg>">
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -12,6 +12,7 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
     
     <!-- EmailJS (Alternative email service) -->
@@ -22,12 +23,22 @@
     <header class="header" id="appHeader" style="display: none;">
         <div class="header-container">
             <h1 class="logo">
-                <i class="fas fa-shopping-basket"></i>
-                GroceryKart
+                <img src="swarup-logo.png" alt="Swarup" style="height: 40px; margin-right: 10px; vertical-align: middle;">
+                Swati Enterprises
             </h1>
-            <div class="cart-icon-container" onclick="requireAuth(showCart)">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-badge" id="cartBadge">0</span>
+            <div class="header-right">
+                <button class="enquire-btn" onclick="requireAuth(showCart)">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Enquire</span>
+                </button>
+                <div class="cart-icon-container" onclick="requireAuth(showCart)">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
             </div>
         </div>
     </header>
@@ -39,18 +50,20 @@
                 <div class="launch-content">
                     <div class="company-branding">
                         <div class="logo-container">
-                            <div class="logo-icon">
-                                <i class="fas fa-shopping-basket"></i>
-                                <div class="logo-accent"></div>
-                            </div>
-                            <h1 class="company-name">Kurv</h1>
+                            <img src="swarup-logo.png" alt="Swarup" class="main-logo">
+                            <h1 class="company-name">Swati Enterprises</h1>
                         </div>
-                        <h2 class="main-slogan">Handlevarer levert hjem</h2>
-                        <p class="tagline">Din norske handlekurv</p>
+                        <h2 class="main-slogan">Listen | Think | Resolve</h2>
+                        <p class="tagline">Dealer of Cable Terminals, Connectors, Cable Glands, Crimping System & Accessories</p>
+                        <div class="business-categories">
+                            <div class="category-badge">Cable Glands</div>
+                            <div class="category-badge">Connectors & Sheet Terminals</div>
+                            <div class="category-badge">Tools & Accessories</div>
+                        </div>
                     </div>
                     
                     <div class="auth-form">
-                        <input type="tel" id="phone" placeholder="Skriv inn mobilnummer (+47000000)" class="phone-input-fluid" maxlength="15">
+                        <input type="tel" id="phone" placeholder="Enter mobile number (+91)" class="phone-input-fluid" maxlength="15">
                         
                         <!-- reCAPTCHA container - hidden initially -->
                         <div id="recaptcha-container" style="margin: 15px 0; display: none;"></div>
@@ -59,9 +72,14 @@
                             Send OTP
                         </button>
                         
+                        <!-- Quick Test Login Button -->
+                        <button type="button" onclick="quickTestLogin()" class="send-otp-btn-fluid" style="background: #48bb78; margin-top: 10px;">
+                            🚀 Quick Test Login (Skip OTP)
+                        </button>
+                        
                         <div id="otpSection" class="otp-section-fluid" style="display: none;">
-                            <p class="otp-display-fluid">Skriv inn OTP sendt til telefonen din</p>
-                            <input type="text" id="otpInput" placeholder="Skriv inn 6-sifret OTP" maxlength="6" class="otp-input-fluid">
+                            <p class="otp-display-fluid">Enter OTP sent to your phone</p>
+                            <input type="text" id="otpInput" placeholder="Enter 6-digit OTP" maxlength="6" class="otp-input-fluid">
                             <button type="button" onclick="verifyFirebaseOtp()" class="verify-otp-btn-fluid">
                                 Verify OTP
                             </button>
@@ -84,10 +102,13 @@
             <div class="modern-header">
                 <div class="header-content">
                     <div>
-                        <h1 class="header-title">Velg Kategori</h1>
-                        <p class="header-subtitle">Velg fra vårt brede utvalg av produkter</p>
+                        <h1 class="header-title">Select Category</h1>
+                        <p class="header-subtitle">Choose from our wide range of products</p>
                     </div>
                     <div class="view-toggle">
+                        <button class="view-btn" onclick="reloadData()" title="Reload categories from database" style="margin-right: 10px;">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
                         <button class="view-btn active" id="categoryGridViewBtn" onclick="setCategoryViewMode('grid')">
                             <i class="fas fa-th"></i>
                         </button>
@@ -118,8 +139,8 @@
                     </div>
                 </div>
                 <div>
-                    <h1 class="header-title" id="catalogTitle">Produkter</h1>
-                    <p class="header-subtitle" id="catalogSubtitle">Ferske og kvalitetsprodukter</p>
+                    <h1 class="header-title" id="catalogTitle">Products</h1>
+                    <p class="header-subtitle" id="catalogSubtitle">Quality products for your needs</p>
                 </div>
             </div>
             <div class="catalog-grid" id="catalogGrid"></div>
@@ -135,8 +156,8 @@
                     </button>
                 </div>
                 <div>
-                    <h1 class="header-title"><i class="fas fa-shopping-cart"></i> Din Handlekurv</h1>
-                    <p class="header-subtitle">Se gjennom varene dine før bestilling</p>
+                    <h1 class="header-title"><i class="fas fa-shopping-cart"></i> Your Equiry Cart</h1>
+                    <p class="header-subtitle">Review your items before enquiry</p>
                 </div>
             </div>
             <div id="cartItems" class="cart-items"></div>
@@ -144,15 +165,21 @@
                 <div class="customer-details">
                     <div class="input-group">
                         <label for="customerEmail">Email Address *</label>
-                        <input type="email" id="customerEmail" placeholder="Enter your email address" required>
-                        <small class="input-help">We'll send you an order confirmation</small>
+                        <input type="email" id="customerEmail" required>
+                        <small class="input-help">We'll send you an enquiry confirmation</small>
+                        <small class="input-error" id="emailError" style="display: none; color: #ff4757; font-size: 0.85rem; margin-top: 0.25rem;">Please enter a valid email address</small>
+                    </div>
+                    <div class="input-group" style="margin-top: 1rem;">
+                        <label for="additionalNotes">Additional Requirements (Optional)</label>
+                        <textarea id="additionalNotes" rows="3" placeholder="Enter any specific requirements, quantities, or questions..."></textarea>
+                        <small class="input-help">Let us know if you need any specific details or have questions</small>
                     </div>
                 </div>
                 <div class="total-amount">
-                    <strong>Total: <span id="cartTotal">0.00</span> kr</strong>
+                    <strong>Total: ₹<span id="cartTotal">0.00</span></strong>
                 </div>
-                <button onclick="placeOrder()" class="btn-primary place-order-btn">
-                    <i class="fas fa-credit-card"></i> Place Order
+                <button onclick="placeOrder()" class="btn-primary place-order-btn" id="placeOrderBtn">
+                    <i class="fas fa-paper-plane"></i> Submit Enquiry
                 </button>
             </div>
         </section>
@@ -167,23 +194,43 @@
                     </button>
                 </div>
                 <div>
-                    <h1 class="header-title"><i class="fas fa-map-marker-alt"></i> Leveringsadresse</h1>
-                    <p class="header-subtitle">Skriv inn leveringsdetaljer</p>
+                    <h1 class="header-title"><i class="fas fa-map-marker-alt"></i> Delivery Address</h1>
+                    <p class="header-subtitle">Enter delivery details (all fields are optional)</p>
                 </div>
             </div>
             <div class="address-form">
                 <div class="form-section">
-                    <h3>Contact Information</h3>
-                    <input type="text" id="fullName" placeholder="Full Name *" required>
-                    <input type="tel" id="deliveryPhone" placeholder="Mobile Number *" required>
+                    <h3>Contact Information (Optional)</h3>
+                    
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName">
+                    
+                    <label for="deliveryPhone">Mobile Number</label>
+                    <input type="tel" id="deliveryPhone">
+                    
+                    <label for="companyName">Company Name</label>
+                    <input type="text" id="companyName">
+                    
+                    <label for="gstin">GSTIN</label>
+                    <input type="text" id="gstin">
                 </div>
                 
                 <div class="form-section">
-                    <h3>Delivery Address</h3>
-                    <input type="text" id="streetAddress" placeholder="Street Address *" required>
-                    <input type="text" id="city" placeholder="City *" required>
-                    <input type="text" id="postalCode" placeholder="Postal Code *" required>
-                    <input type="text" id="landmark" placeholder="Landmark (Optional)">
+                    <h3>Delivery Address (Optional)</h3>
+                    
+                    <label for="streetAddress">Street Address</label>
+                    <input type="text" id="streetAddress">
+                    
+                    <label for="city">City</label>
+                    <input type="text" id="city">
+                    
+                    <label for="postalCode">Postal Code</label>
+                    <input type="text" id="postalCode">
+                    
+                    <label for="landmark">Landmark</label>
+                    <input type="text" id="landmark">
+                    
+                    <label for="addressType">Address Type</label>
                     <select id="addressType">
                         <option value="home">Home</option>
                         <option value="work">Work</option>
@@ -192,28 +239,12 @@
                 </div>
                 
                 <button onclick="confirmOrder()" class="btn-primary order-confirm-btn">
-                    <i class="fas fa-check-circle"></i> Confirm Order
+                    <i class="fas fa-check-circle"></i> Submit Enquiry
                 </button>
             </div>
         </div>
 
-        <!-- Orders Section -->
-        <section id="orders" class="section hidden">
-            <div class="modern-header">
-                <div class="header-content">
-                    <button class="back-btn" onclick="showCategories()">
-                        <i class="fas fa-arrow-left"></i>
-                        Back
-                    </button>
-                </div>
-                <div>
-                    <h1 class="header-title"><i class="fas fa-receipt"></i> Mine Bestillinger</h1>
-                    <p class="header-subtitle">Spor bestillingshistorikken din</p>
-                </div>
-            </div>
-            <div id="ordersList" class="orders-list"></div>
-        </section>
-
+        <!-- Enquiries Section -->
         <!-- Profile Section -->
         <section id="profile" class="section hidden">
             <div class="modern-header">
@@ -223,56 +254,73 @@
                         Back
                     </button>
                 </div>
-                <div>
-                    <h1 class="header-title"><i class="fas fa-user"></i> Min Profil</h1>
-                    <p class="header-subtitle">Administrer kontoinformasjonen din</p>
-                </div>
-            </div>
             <div class="profile-content">
                 <div class="profile-card">
                     <div class="profile-header">
-                        <div class="profile-avatar">
-                            <i class="fas fa-user-circle"></i>
-                        </div>
-                        <div class="profile-info">
-                            <h2 id="profileName">User Name</h2>
-                            <p id="profilePhone">Phone Number</p>
+                        <div class="company-logo-section">
+                            <img src="swarup-logo.png" alt="Swati Enterprises Logo" class="company-logo">
+                            <div class="company-info">
+                                <h2>Swati Enterprises</h2>
+                                <p class="company-tagline">Listen | Think | Resolve</p>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="profile-details">
                         <div class="detail-item">
-                            <i class="fas fa-phone"></i>
+                            <i class="fas fa-briefcase"></i>
                             <div class="detail-content">
-                                <label>Mobile Number</label>
-                                <span id="profileMobile">+91 XXXXXXXXXX</span>
-                            </div>
-                        </div>
-                        
-                        <div class="detail-item">
-                            <i class="fas fa-envelope"></i>
-                            <div class="detail-content">
-                                <label>Email ID</label>
-                                <span id="profileEmail">user@example.com</span>
+                                <label>Business</label>
+                                <span style="line-height: 1.6;">Dealer of Cable Terminals, Connectors, Cable Glands, Crimping System & Accessories<br><br>
+                                <strong>Main Product Categories:</strong><br>
+                                • Cable Glands<br>
+                                • Connectors & Sheet Terminals<br>
+                                • Tools & Accessories</span>
                             </div>
                         </div>
                         
                         <div class="detail-item">
                             <i class="fas fa-map-marker-alt"></i>
                             <div class="detail-content">
-                                <label>Default Address</label>
-                                <span id="profileAddress">No address saved</span>
+                                <label>Parkside Office</label>
+                                <span>Parkside Business Avenue, S-27, Second Floor<br>
+                                Wadala Pathardi Road, Nashik - 422010<br>
+                                Maharashtra, India</span>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="profile-actions">
-                        <button onclick="editProfile()" class="btn-secondary">
-                            <i class="fas fa-edit"></i> Edit Profile
-                        </button>
-                        <button onclick="logout()" class="btn-danger">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
+                        
+                        <div class="detail-item">
+                            <i class="fas fa-building"></i>
+                            <div class="detail-content">
+                                <label>Registered Office</label>
+                                <span>Divine Park, 1A, 204, Shiv Colony<br>
+                                Nashik - 422009, Maharashtra, India</span>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <i class="fas fa-phone"></i>
+                            <div class="detail-content">
+                                <label>Phone</label>
+                                <span><a href="tel:+919075059736" style="color: #667eea; text-decoration: none;">+91 9075059736</a></span>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <i class="fas fa-envelope"></i>
+                            <div class="detail-content">
+                                <label>Email</label>
+                                <span><a href="mailto:support@swarup.biz" style="color: #667eea; text-decoration: none;">support@swarup.biz</a></span>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <i class="fas fa-id-card"></i>
+                            <div class="detail-content">
+                                <label>GSTIN</label>
+                                <span>27ARNPJ0202D1ZC</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -283,20 +331,16 @@
     <nav class="bottom-nav" id="bottomNav" style="display: none;">
         <button onclick="showCategories()" class="nav-item">
             <i class="fas fa-home"></i>
-            <span>Hjem</span>
+            <span>Home</span>
         </button>
         <button onclick="requireAuth(showCart)" class="nav-item">
             <i class="fas fa-shopping-cart"></i>
-            <span>Kurv</span>
+            <span>Enquiry Cart</span>
             <span class="nav-badge" id="navCartBadge">0</span>
         </button>
-        <button onclick="requireAuth(showOrders)" class="nav-item">
-            <i class="fas fa-receipt"></i>
-            <span>Bestillinger</span>
-        </button>
         <button onclick="requireAuth(showProfile)" class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Profil</span>
+            <i class="fas fa-address-book"></i>
+            <span>Contact</span>
         </button>
     </nav>
 

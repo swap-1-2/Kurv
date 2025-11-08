@@ -15,6 +15,7 @@ interface Order {
   total: number;
   date: string;
   address?: string;
+  additionalNotes?: string;
 }
 
 interface EmailData {
@@ -80,6 +81,17 @@ export const sendOrderConfirmation = functions.https.onCall(
             ${order.address || "Default Address"}
           </p>
         </div>
+
+        ${order.additionalNotes ? `
+        <div style="background: #fff9e6; padding: 15px; border-radius: 8px; 
+          margin: 20px 0; border-left: 4px solid #ffa502;">
+          <h3>💬 Additional Requirements / Notes</h3>
+          <p style="white-space: pre-wrap; font-family: Arial; 
+            line-height: 1.6; color: #333;">
+            ${order.additionalNotes}
+          </p>
+        </div>
+        ` : ""}
 
         <table style="width: 100%; border-collapse: collapse; 
           margin: 20px 0;">
@@ -151,6 +163,17 @@ export const sendOrderConfirmation = functions.https.onCall(
               </p>
               <p><strong>Phone:</strong> ${customerPhone}</p>
             </div>
+
+            ${order.additionalNotes ? `
+            <div style="background: #fff9e6; padding: 15px; border-radius: 8px; 
+              margin: 20px 0; border-left: 4px solid #ffa502;">
+              <h3>💬 Your Requirements / Notes</h3>
+              <p style="white-space: pre-wrap; font-family: Arial; 
+                line-height: 1.6; color: #333;">
+                ${order.additionalNotes}
+              </p>
+            </div>
+            ` : ""}
 
             <table style="width: 100%; border-collapse: collapse; 
               margin: 20px 0;">

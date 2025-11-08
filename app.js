@@ -11,186 +11,15 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db = firebase.firestore();
 
 // Firebase auth variables
 let confirmationResult;
 let recaptchaVerifier;
 
-// Categories data
-const categories = [
-    {
-        id: 'munchies',
-        name: 'Munchies',
-        icon: '�',
-        description: 'Chips & Snacks',
-        className: 'munchies',
-        color: '#4CAF50'
-    },
-    {
-        id: 'beverages',
-        name: 'Beverages',
-        icon: '�',
-        description: 'Soft Drinks & More',
-        className: 'beverages',
-        color: '#FF5722'
-    },
-    {
-        id: 'instant',
-        name: 'Instant Food',
-        icon: '🍜',
-        description: 'Ready to Eat',
-        className: 'instant',
-        color: '#2196F3'
-    },
-    {
-        id: 'breakfast',
-        name: 'Breakfast & Spreads',
-        icon: '�',
-        description: 'Morning Essentials',
-        className: 'breakfast',
-        color: '#FFC107'
-    },
-    {
-        id: 'fruits',
-        name: 'Fruits & Vegetables',
-        icon: '🥬',
-        description: 'Fresh Produce',
-        className: 'fruits',
-        color: '#8BC34A'
-    },
-    {
-        id: 'meat',
-        name: 'Fresh & Tender Meat',
-        icon: '🥩',
-        description: 'Quality Meat',
-        className: 'meat',
-        color: '#E91E63'
-    },
-    {
-        id: 'sweet',
-        name: 'Sweet Tooth',
-        icon: '�',
-        description: 'Chocolates & Sweets',
-        className: 'sweet',
-        color: '#9C27B0'
-    },
-    {
-        id: 'cooking',
-        name: 'Cooking Essentials',
-        icon: '🧄',
-        description: 'Spices & Oil',
-        className: 'cooking',
-        color: '#FF9800'
-    },
-    {
-        id: 'dairy',
-        name: 'Dairy, Bread & Eggs',
-        icon: '🥛',
-        description: 'Daily Essentials',
-        className: 'dairy',
-        color: '#03A9F4'
-    },
-    {
-        id: 'health',
-        name: 'Health & Hygiene',
-        icon: '�',
-        description: 'Personal Care',
-        className: 'health',
-        color: '#009688'
-    },
-    {
-        id: 'personal',
-        name: 'Personal Care',
-        icon: '🧼',
-        description: 'Beauty & Care',
-        className: 'personal',
-        color: '#E91E63'
-    },
-    {
-        id: 'home',
-        name: 'Home & Cleaning',
-        icon: '🧽',
-        description: 'Household Items',
-        className: 'home',
-        color: '#607D8B'
-    }
-];
-
-// Sample products data
-const allProducts = {
-    munchies: [
-        { id: 'p1', name: 'Lay\'s Classic', price: 25.00, unit: 'pack', image: '🍟' },
-        { id: 'p2', name: 'Kurkure Masala', price: 20.00, unit: 'pack', image: '🌽' },
-        { id: 'p3', name: 'Bingo Mad Angles', price: 30.00, unit: 'pack', image: '🔺' },
-        { id: 'p4', name: 'Haldiram Mixture', price: 45.00, unit: 'pack', image: '🥜' }
-    ],
-    beverages: [
-        { id: 'p5', name: 'Coca Cola', price: 40.00, unit: 'bottle', image: '🥤' },
-        { id: 'p6', name: 'Pepsi', price: 40.00, unit: 'bottle', image: '🥤' },
-        { id: 'p7', name: 'Sprite', price: 40.00, unit: 'bottle', image: '🥤' },
-        { id: 'p8', name: 'Thums Up', price: 40.00, unit: 'bottle', image: '🥤' }
-    ],
-    instant: [
-        { id: 'p9', name: 'Maggi Noodles', price: 15.00, unit: 'pack', image: '🍜' },
-        { id: 'p10', name: 'Yippee Noodles', price: 12.00, unit: 'pack', image: '🍜' },
-        { id: 'p11', name: 'Top Ramen', price: 20.00, unit: 'pack', image: '🍜' },
-        { id: 'p12', name: 'Pasta', price: 35.00, unit: 'pack', image: '�' }
-    ],
-    breakfast: [
-        { id: 'p13', name: 'Kellogg\'s Cornflakes', price: 125.00, unit: 'box', image: '🥣' },
-        { id: 'p14', name: 'Chocos', price: 135.00, unit: 'box', image: '🥣' },
-        { id: 'p15', name: 'Bread', price: 25.00, unit: 'pack', image: '🍞' },
-        { id: 'p16', name: 'Jam', price: 85.00, unit: 'jar', image: '🍯' }
-    ],
-    fruits: [
-        { id: 'p17', name: 'Banana', price: 40.00, unit: 'dozen', image: '🍌' },
-        { id: 'p18', name: 'Apple', price: 120.00, unit: 'kg', image: '🍎' },
-        { id: 'p19', name: 'Onion', price: 25.00, unit: 'kg', image: '�' },
-        { id: 'p20', name: 'Tomato', price: 35.00, unit: 'kg', image: '🍅' }
-    ],
-    meat: [
-        { id: 'p21', name: 'Chicken Breast', price: 250.00, unit: 'kg', image: '🍗' },
-        { id: 'p22', name: 'Mutton', price: 450.00, unit: 'kg', image: '🥩' },
-        { id: 'p23', name: 'Fish', price: 200.00, unit: 'kg', image: '🐟' },
-        { id: 'p24', name: 'Prawns', price: 350.00, unit: 'kg', image: '�' }
-    ],
-    sweet: [
-        { id: 'p25', name: 'Dairy Milk', price: 45.00, unit: 'bar', image: '🍫' },
-        { id: 'p26', name: 'KitKat', price: 20.00, unit: 'bar', image: '🍫' },
-        { id: 'p27', name: 'Gulab Jamun', price: 80.00, unit: 'pack', image: '🟤' },
-        { id: 'p28', name: 'Rasgulla', price: 60.00, unit: 'pack', image: '⚪' }
-    ],
-    cooking: [
-        { id: 'p29', name: 'Turmeric Powder', price: 35.00, unit: '100g', image: '🌶️' },
-        { id: 'p30', name: 'Red Chili Powder', price: 40.00, unit: '100g', image: '🌶️' },
-        { id: 'p31', name: 'Cooking Oil', price: 120.00, unit: 'liter', image: '�' },
-        { id: 'p32', name: 'Salt', price: 20.00, unit: '1kg', image: '�' }
-    ],
-    dairy: [
-        { id: 'p33', name: 'Milk', price: 50.00, unit: 'liter', image: '🥛' },
-        { id: 'p34', name: 'Bread', price: 25.00, unit: 'pack', image: '�' },
-        { id: 'p35', name: 'Eggs', price: 60.00, unit: 'dozen', image: '🥚' },
-        { id: 'p36', name: 'Butter', price: 85.00, unit: '200g', image: '🧈' }
-    ],
-    health: [
-        { id: 'p37', name: 'Hand Sanitizer', price: 50.00, unit: 'bottle', image: '🧴' },
-        { id: 'p38', name: 'Face Mask', price: 120.00, unit: 'pack', image: '😷' },
-        { id: 'p39', name: 'Vitamin C', price: 250.00, unit: 'bottle', image: '💊' },
-        { id: 'p40', name: 'First Aid Kit', price: 450.00, unit: 'kit', image: '🩹' }
-    ],
-    personal: [
-        { id: 'p41', name: 'Shampoo', price: 180.00, unit: 'bottle', image: '🧴' },
-        { id: 'p42', name: 'Soap', price: 35.00, unit: 'bar', image: '🧼' },
-        { id: 'p43', name: 'Toothpaste', price: 65.00, unit: 'tube', image: '�' },
-        { id: 'p44', name: 'Deodorant', price: 150.00, unit: 'bottle', image: '🧴' }
-    ],
-    home: [
-        { id: 'p45', name: 'Dish Soap', price: 75.00, unit: 'bottle', image: '�' },
-        { id: 'p46', name: 'All Purpose Cleaner', price: 95.00, unit: 'bottle', image: '🧽' },
-        { id: 'p47', name: 'Toilet Paper', price: 120.00, unit: 'pack', image: '🧻' },
-        { id: 'p48', name: 'Laundry Detergent', price: 180.00, unit: 'bottle', image: '�' }
-    ]
-};
+// Categories and products data (will be loaded from Firestore)
+let categories = [];
+let allProducts = {};
 
 // Global variables
 let cart = {};
@@ -222,9 +51,62 @@ function testOTP() {
     }
 }
 
+// Load categories and products from Firestore
+async function loadCategoriesFromFirestore() {
+    try {
+        console.log('🔍 Loading categories from Firestore...');
+        const snapshot = await db.collection('categories').get();
+        categories = [];
+        snapshot.forEach(doc => {
+            const categoryData = doc.data();
+            console.log('✅ Found category:', categoryData);
+            categories.push(categoryData);
+        });
+        console.log('📊 Total categories loaded:', categories.length);
+        console.log('📋 Categories:', categories);
+        
+        if (categories.length === 0) {
+            console.warn('⚠️ No categories found in Firestore! Please add categories via admin panel.');
+        }
+    } catch (error) {
+        console.error('❌ Error loading categories:', error);
+        showToast('Error loading categories: ' + error.message);
+    }
+}
+
+async function loadProductsFromFirestore() {
+    try {
+        console.log('🔍 Loading products from Firestore...');
+        const snapshot = await db.collection('products').get();
+        allProducts = {};
+        snapshot.forEach(doc => {
+            const product = doc.data();
+            console.log('✅ Found product:', product);
+            if (!allProducts[product.category]) {
+                allProducts[product.category] = [];
+            }
+            allProducts[product.category].push(product);
+        });
+        console.log('📊 Total product categories:', Object.keys(allProducts).length);
+        console.log('📋 Products by category:', allProducts);
+        
+        if (Object.keys(allProducts).length === 0) {
+            console.warn('⚠️ No products found in Firestore! Please add products via admin panel.');
+        }
+    } catch (error) {
+        console.error('❌ Error loading products:', error);
+        showToast('Error loading products: ' + error.message);
+    }
+}
+
 // Initialize app
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     console.log('App initializing...');
+    
+    // Load data from Firestore
+    await loadCategoriesFromFirestore();
+    await loadProductsFromFirestore();
+    
     loadData();
     
     // Load saved view mode
@@ -578,6 +460,38 @@ async function verifyFirebaseOtp() {
     }
 }
 
+// Quick test login (bypass OTP for testing)
+function quickTestLogin() {
+    // Set a test user
+    const testPhone = '+47' + Math.floor(Math.random() * 100000000);
+    user = testPhone;
+    localStorage.setItem('user', user);
+    
+    // Load user's orders
+    loadOrders();
+    
+    // Show navigation and header
+    const bottomNav = document.getElementById('bottomNav');
+    const appHeader = document.getElementById('appHeader');
+    if (bottomNav) bottomNav.style.display = 'flex';
+    if (appHeader) appHeader.style.display = 'block';
+    
+    showToast('🚀 Test login successful! Phone: ' + testPhone);
+    showCategories();
+}
+
+// Reload data from Firestore
+async function reloadData() {
+    showToast('🔄 Reloading data from Firestore...');
+    await loadCategoriesFromFirestore();
+    await loadProductsFromFirestore();
+    renderCategories();
+    showToast('✅ Data reloaded successfully!');
+}
+
+// Add reload data to global scope
+window.reloadData = reloadData;
+
 // Legacy Authentication functions (keeping for backward compatibility)
 function sendOtp() {
     const phoneInput = document.getElementById('phone');
@@ -890,6 +804,10 @@ function showCategories() {
         showLogin();
         return;
     }
+    
+    console.log('📱 Showing categories page...');
+    console.log('📊 Available categories:', categories);
+    
     showSection('categories');
     renderCategories();
     initializeCategoryViewButtons();
@@ -986,7 +904,29 @@ function setCategoryViewMode(mode) {
 // Render functions
 function renderCategories() {
     const grid = document.getElementById('categoryGrid');
-    if (!grid) return;
+    if (!grid) {
+        console.error('❌ Category grid element not found!');
+        return;
+    }
+    
+    console.log('🎨 Rendering categories...');
+    console.log('📊 Categories to render:', categories);
+    
+    if (!categories || categories.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                <i class="fas fa-inbox" style="font-size: 80px; color: #ddd; margin-bottom: 20px;"></i>
+                <h2 style="color: #666; margin-bottom: 10px;">No Categories Yet</h2>
+                <p style="color: #999;">Please add categories via the admin panel to get started!</p>
+                <p style="color: #999; margin-top: 10px;">
+                    <a href="admin.html" target="_blank" style="color: #667eea; text-decoration: underline;">
+                        Open Admin Panel
+                    </a>
+                </p>
+            </div>
+        `;
+        return;
+    }
     
     grid.innerHTML = categories.map(category => `
         <div class="category-card ${category.className}" onclick="showCategory('${category.id}')">
@@ -995,6 +935,8 @@ function renderCategories() {
             <p>${category.description}</p>
         </div>
     `).join('');
+    
+    console.log('✅ Categories rendered successfully');
 }
 
 function renderCatalog() {
@@ -1015,49 +957,103 @@ function renderCatalog() {
     
     if (viewMode === 'list') {
         // List view layout
-        catalogGrid.innerHTML = products.map(product => `
-            <div class="product-card">
-                <div class="product-image">${product.image}</div>
-                <div class="product-info">
-                    <h3>${product.name}</h3>
-                    <p class="product-price">${product.price} kr/${product.unit}</p>
+        catalogGrid.innerHTML = products.map(product => {
+            const isImageUrl = product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'));
+            const imageDisplay = isImageUrl 
+                ? `<img src="${product.image}" alt="${product.name}">` 
+                : product.image;
+            
+            const productId = product.itemNumber || product.id;
+            const unitDisplay = product.specification 
+                ? `${product.uomCode || product.unit} - ${product.specification}`
+                : (product.uomCode || product.unit);
+            
+            return `
+                <div class="product-card">
+                    <div class="product-image">${imageDisplay}</div>
+                    <div class="product-info">
+                        <h3>${product.name}</h3>
+                        ${product.subCategory ? `<p style="color: #888; font-size: 12px;">${product.subCategory}</p>` : ''}
+                        <p class="product-price">₹${product.price}/${unitDisplay}</p>
+                    </div>
+                    <div class="quantity-controls">
+                        <button onclick="decreaseQuantity('${productId}')" class="quantity-btn">-</button>
+                        <input type="number" 
+                               class="quantity-input" 
+                               value="${cart[productId] || 0}" 
+                               min="0" 
+                               max="99999999"
+                               onchange="updateQuantity('${productId}', this.value)"
+                               onclick="this.select()"
+                               title="Click to edit quantity">
+                        <button onclick="increaseQuantity('${productId}')" class="quantity-btn">+</button>
+                    </div>
                 </div>
-                <div class="quantity-controls">
-                    <button onclick="decreaseQuantity('${product.id}')" class="quantity-btn">-</button>
-                    <span class="quantity">${cart[product.id] || 0}</span>
-                    <button onclick="increaseQuantity('${product.id}')" class="quantity-btn">+</button>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     } else {
         // Grid view layout (default)
-        catalogGrid.innerHTML = products.map(product => `
-            <div class="product-card">
-                <div class="product-image">${product.image}</div>
-                <h3>${product.name}</h3>
-                <p class="product-price">${product.price} kr/${product.unit}</p>
-                <div class="quantity-controls">
-                    <button onclick="decreaseQuantity('${product.id}')" class="quantity-btn">-</button>
-                    <span class="quantity">${cart[product.id] || 0}</span>
-                    <button onclick="increaseQuantity('${product.id}')" class="quantity-btn">+</button>
+        catalogGrid.innerHTML = products.map(product => {
+            const isImageUrl = product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'));
+            const imageDisplay = isImageUrl 
+                ? `<img src="${product.image}" alt="${product.name}">` 
+                : product.image;
+            
+            const productId = product.itemNumber || product.id;
+            const unitDisplay = product.specification 
+                ? `${product.uomCode || product.unit} - ${product.specification}`
+                : (product.uomCode || product.unit);
+            
+            return `
+                <div class="product-card">
+                    <div class="product-image">${imageDisplay}</div>
+                    <h3>${product.name}</h3>
+                    ${product.subCategory ? `<p style="color: #888; font-size: 12px; margin-bottom: 5px;">${product.subCategory}</p>` : ''}
+                    <p class="product-price">₹${product.price}/${unitDisplay}</p>
+                    <div class="quantity-controls">
+                        <button onclick="decreaseQuantity('${productId}')" class="quantity-btn">-</button>
+                        <input type="number" 
+                               class="quantity-input" 
+                               value="${cart[productId] || 0}" 
+                               min="0" 
+                               max="99999999"
+                               onchange="updateQuantity('${productId}', this.value)"
+                               onclick="this.select()"
+                               title="Click to edit quantity">
+                        <button onclick="increaseQuantity('${productId}')" class="quantity-btn">+</button>
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 }
 
 function renderCart() {
     const cartItems = document.getElementById('cartItems');
     const cartTotal = document.getElementById('cartTotal');
+    const placeOrderBtn = document.getElementById('placeOrderBtn');
     
     if (!cartItems) return;
     
     const cartEntries = Object.entries(cart);
     
     if (cartEntries.length === 0) {
-        cartItems.innerHTML = '<p class="empty-cart">Your cart is empty</p>';
+        cartItems.innerHTML = '<p class="empty-cart">Your cart is empty. You can still submit an enquiry with your requirements in the notes section.</p>';
         if (cartTotal) cartTotal.textContent = '0.00';
+        // Keep the button enabled even when cart is empty
+        if (placeOrderBtn) {
+            placeOrderBtn.disabled = false;
+            placeOrderBtn.style.opacity = '1';
+            placeOrderBtn.style.cursor = 'pointer';
+        }
         return;
+    }
+    
+    // Enable the button when cart has items
+    if (placeOrderBtn) {
+        placeOrderBtn.disabled = false;
+        placeOrderBtn.style.opacity = '1';
+        placeOrderBtn.style.cursor = 'pointer';
     }
     
     let total = 0;
@@ -1069,20 +1065,33 @@ function renderCart() {
         const subtotal = product.price * quantity;
         total += subtotal;
         
+            const isImageUrl = product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'));
+            const imageDisplay = isImageUrl 
+                ? `<img src="${product.image}" alt="${product.name}" style="width: 100%; height: 100%; object-fit: contain;">` 
+                : product.image;        const unitDisplay = product.uomCode || product.unit;
+        
         return `
             <div class="cart-item">
                 <div class="item-info">
-                    <span class="item-icon">${product.image}</span>
+                    <span class="item-icon">${imageDisplay}</span>
                     <div class="item-details">
                         <h4>${product.name}</h4>
-                        <p>${product.price} kr/${product.unit}</p>
+                        <p>₹${product.price}/${unitDisplay}</p>
+                        ${product.specification ? `<small style="color: #888;">${product.specification}</small>` : ''}
                     </div>
                 </div>
                 <div class="item-controls">
                     <button onclick="decreaseQuantity('${productId}')" class="quantity-btn">-</button>
-                    <span class="quantity">${quantity}</span>
+                    <input type="number" 
+                           class="quantity-input" 
+                           value="${quantity}" 
+                           min="1" 
+                           max="99999999"
+                           onchange="updateQuantity('${productId}', this.value)"
+                           onclick="this.select()"
+                           title="Click to edit quantity">
                     <button onclick="increaseQuantity('${productId}')" class="quantity-btn">+</button>
-                    <span class="item-total">${subtotal.toFixed(2)} kr</span>
+                    <span class="item-total">₹${subtotal.toFixed(2)}</span>
                 </div>
             </div>
         `;
@@ -1200,6 +1209,68 @@ function decreaseQuantity(productId) {
     }
 }
 
+function updateQuantity(productId, newQuantity) {
+    const quantity = parseInt(newQuantity);
+    
+    // Validate quantity
+    if (isNaN(quantity) || quantity < 0) {
+        showToast('Please enter a valid quantity (0 or more)');
+        if (currentSection === 'catalog') {
+            renderCatalog();
+        } else if (currentSection === 'cart') {
+            renderCart();
+        }
+        return;
+    }
+    
+    if (quantity > 99999999) {
+        showToast('Maximum quantity is 99,999,999');
+        if (currentSection === 'catalog') {
+            renderCatalog();
+        } else if (currentSection === 'cart') {
+            renderCart();
+        }
+        return;
+    }
+    
+    // If quantity is 0, remove from cart
+    if (quantity === 0) {
+        delete cart[productId];
+        saveCart();
+        updateCartBadges();
+        
+        // Update display
+        if (currentSection === 'catalog') {
+            renderCatalog();
+        } else if (currentSection === 'cart') {
+            renderCart();
+        }
+        
+        showToast('Item removed from cart');
+        return;
+    }
+    
+    // Update cart with new quantity
+    const oldQuantity = cart[productId] || 0;
+    cart[productId] = quantity;
+    saveCart();
+    updateCartBadges();
+    
+    // Update display
+    if (currentSection === 'catalog') {
+        renderCatalog();
+    } else if (currentSection === 'cart') {
+        renderCart();
+    }
+    
+    // Show appropriate message
+    if (oldQuantity === 0) {
+        showToast('Item added to cart');
+    } else {
+        showToast('Quantity updated');
+    }
+}
+
 function updateCartBadges() {
     const totalItems = Object.values(cart).reduce((sum, quantity) => sum + quantity, 0);
     const cartBadge = document.getElementById('cartBadge');
@@ -1227,67 +1298,82 @@ function updateCartBadges() {
 // Order functions
 function placeOrder() {
     if (!user) {
-        showToast('Please login to place an order');
+        showToast('Please login to submit an enquiry');
         showLogin();
         return;
     }
     
-    if (Object.keys(cart).length === 0) {
-        showToast('Your cart is empty');
-        return;
-    }
+    // Allow enquiry even with empty cart
+    // if (Object.keys(cart).length === 0) {
+    //     showToast('Your cart is empty');
+    //     return;
+    // }
     
     // Validate email
-    const customerEmail = document.getElementById('customerEmail').value.trim();
+    const customerEmailInput = document.getElementById('customerEmail');
+    const emailError = document.getElementById('emailError');
+    const customerEmail = customerEmailInput.value.trim();
+    
     if (!customerEmail) {
+        emailError.textContent = 'Email address is required';
+        emailError.style.display = 'block';
+        customerEmailInput.style.borderColor = '#ff4757';
+        customerEmailInput.focus();
         showToast('Please enter your email address');
-        document.getElementById('customerEmail').focus();
         return;
     }
     
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(customerEmail)) {
+        emailError.textContent = 'Please enter a valid email address';
+        emailError.style.display = 'block';
+        customerEmailInput.style.borderColor = '#ff4757';
+        customerEmailInput.focus();
         showToast('Please enter a valid email address');
-        document.getElementById('customerEmail').focus();
         return;
     }
     
-    // Store email for later use
-    window.customerEmail = customerEmail;
+    // Hide error if validation passes
+    emailError.style.display = 'none';
+    customerEmailInput.style.borderColor = 'rgba(102, 126, 234, 0.2)';
     
-    // Show address form before placing order
+    // Store email and additional notes for later use
+    window.customerEmail = customerEmail;
+    window.additionalNotes = document.getElementById('additionalNotes').value.trim();
+    
+    // Debug: Log captured additional notes
+    console.log('=== CAPTURED FROM CART PAGE ===');
+    console.log('Additional Notes:', window.additionalNotes);
+    console.log('Length:', window.additionalNotes.length);
+    
+    // Show address form before submitting enquiry
     showAddress();
 }
 
-function confirmOrder() {
-    // Validate address form
+async function confirmOrder() {
+    // Get address form values (all optional now)
     const fullName = document.getElementById('fullName').value.trim();
     const deliveryPhone = document.getElementById('deliveryPhone').value.trim();
+    const companyName = document.getElementById('companyName').value.trim();
+    const gstin = document.getElementById('gstin').value.trim();
     const streetAddress = document.getElementById('streetAddress').value.trim();
     const city = document.getElementById('city').value.trim();
     const postalCode = document.getElementById('postalCode').value.trim();
     const landmark = document.getElementById('landmark').value.trim();
     const addressType = document.getElementById('addressType').value;
     
-    if (!fullName || !deliveryPhone || !streetAddress || !city || !postalCode) {
-        showToast('Please fill in all required fields (Name, Mobile, Address, City, Postal Code)');
-        return;
-    }
+    // No validation - all fields are optional
+    // Users can submit enquiry with just email and notes
     
-    // Validate mobile number
-    const phoneDigits = deliveryPhone.replace(/\D/g, '');
-    if (phoneDigits.length < 8) {
-        showToast('Please enter a valid mobile number');
-        return;
-    }
-    
-    // Save address with mobile number
+    // Save address (even if fields are empty)
     currentAddress = {
-        fullName,
-        phone: deliveryPhone,
-        streetAddress,
-        city,
+        fullName: fullName || 'Not provided',
+        phone: deliveryPhone || 'Not provided',
+        companyName: companyName || 'Not provided',
+        gstin: gstin || 'Not provided',
+        streetAddress: streetAddress || 'Not provided',
+        city: city || 'Not provided',
         postalCode,
         landmark,
         type: addressType
@@ -1309,20 +1395,39 @@ function confirmOrder() {
     
     const total = orderItems.reduce((sum, item) => sum + item.total, 0);
     
+    // Debug: Log additional notes before creating order
+    console.log('=== CREATING ORDER ===');
+    console.log('window.additionalNotes:', window.additionalNotes);
+    
     const order = {
         id: 'ORD-' + Date.now(),
         date: new Date().toISOString(),
         items: orderItems,
         total: total.toFixed(2),
         status: 'confirmed',
-        address: currentAddress
+        address: currentAddress,
+        customerPhone: user,
+        customerEmail: window.customerEmail || 'customer@example.com',
+        additionalNotes: window.additionalNotes || ''
     };
     
-    // Add to orders
+    // Debug: Log the complete order object
+    console.log('Order object created:', order);
+    console.log('Order additionalNotes field:', order.additionalNotes);
+    
+    // Save order to Firestore
+    try {
+        await db.collection('orders').doc(order.id).set(order);
+        console.log('Order saved to Firestore:', order.id);
+    } catch (error) {
+        console.error('Error saving order to Firestore:', error);
+    }
+    
+    // Add to local orders
     orders.unshift(order);
     saveOrders();
     
-    // Send order confirmation email via Firebase Function
+    // Send enquiry confirmation email via Firebase Function
     sendOrderConfirmationEmail(order);
     
     // Clear cart
@@ -1330,8 +1435,10 @@ function confirmOrder() {
     saveCart();
     updateCartBadges();
     
-    showToast('Order placed successfully! Confirmation email sent.');
-    showOrders();
+    showToast('Enquiry submitted successfully! Confirmation email sent.');
+    
+    // Navigate back to home (categories) instead of orders
+    showCategories();
 }
 
 // Email notification function
@@ -1348,7 +1455,7 @@ async function sendOrderConfirmationEmail(order) {
                 customerEmail: window.customerEmail || 'customer@example.com'
             };
             
-            console.log('Sending order confirmation via Firebase Functions...', order.id);
+            console.log('Sending enquiry confirmation via Firebase Functions...', order.id);
             const result = await sendOrderConfirmation(emailData);
             console.log('Firebase email sent successfully:', result.data);
         }
@@ -1358,7 +1465,7 @@ async function sendOrderConfirmationEmail(order) {
         }
         
     } catch (error) {
-        console.error('Error sending order confirmation email:', error);
+        console.error('Error sending enquiry confirmation email:', error);
         // Try EmailJS as fallback
         try {
             if (typeof emailjs !== 'undefined') {
@@ -1373,21 +1480,69 @@ async function sendOrderConfirmationEmail(order) {
 // EmailJS alternative email function  
 async function sendEmailViaEmailJS(order) {
     try {
-        console.log('Sending order confirmation via EmailJS...', order.id);
+        console.log('Sending enquiry confirmation via EmailJS...', order.id);
         
-        // Prepare order items for email
+        // Prepare enquiry items for email (HTML format)
         const orderItemsHtml = order.items.map(item => 
             `<li>${item.name} x ${item.quantity} - ₹${item.price * item.quantity}</li>`
         ).join('');
         
+        // Create CSV-formatted data for easy Excel import
+        const csvHeader = 'Item Number,Category,Product Name,Make,Specification,Unit Price,Quantity,Total Price,UOM\n';
+        const csvData = order.items.map(item => {
+            const itemNumber = item.itemNumber || '';
+            const category = item.category || '';
+            const name = (item.name || '').replace(/,/g, ';'); // Replace commas to avoid CSV issues
+            const make = item.make || '';
+            const spec = (item.specification || '').replace(/,/g, ';');
+            const price = item.price || 0;
+            const qty = item.quantity || 0;
+            const total = price * qty;
+            const uom = item.uomCode || '';
+            
+            return `${itemNumber},${category},"${name}",${make},"${spec}",${price},${qty},${total},${uom}`;
+        }).join('\n');
+        
+        const csvContent = csvHeader + csvData;
+        const csvFooter = `\n\nTotal Amount,,,,,,,₹${order.total},`;
+        const fullCsvContent = csvContent + csvFooter;
+        
+        // Create plain text table format for better email readability
+        const textTable = order.items.map((item, index) => 
+            `${index + 1}. ${item.itemNumber || 'N/A'} - ${item.name}
+   Make: ${item.make || 'N/A'} | Qty: ${item.quantity} ${item.uomCode || ''} | Price: ₹${item.price} | Total: ₹${item.price * item.quantity}`
+        ).join('\n\n');
+        
+        // Format address
+        const addressText = `${order.address.fullName}
+${order.address.phone}
+${order.address.companyName ? order.address.companyName + '\n' : ''}${order.address.gstin ? 'GSTIN: ' + order.address.gstin + '\n' : ''}${order.address.streetAddress}
+${order.address.city}, ${order.address.postalCode}
+${order.address.landmark ? 'Landmark: ' + order.address.landmark : ''}`;
+        
         const templateParams = {
             order_id: order.id,
-            order_total: order.total,
-            order_items: orderItemsHtml,
-            customer_phone: user,
-            order_date: new Date(order.date).toLocaleString(),
-            delivery_address: order.address || 'Default Address'
+            order_total: '₹' + order.total,
+            order_items_html: orderItemsHtml,
+            order_items_text: textTable,
+            order_csv: fullCsvContent,
+            customer_phone: order.customerPhone || user,
+            customer_name: order.address.fullName,
+            customer_email: order.customerEmail,
+            company_name: order.address.companyName || 'N/A',
+            gstin: order.address.gstin || 'N/A',
+            order_date: new Date(order.date).toLocaleString('en-IN', { 
+                dateStyle: 'medium', 
+                timeStyle: 'short' 
+            }),
+            delivery_address: addressText,
+            item_count: order.items.length,
+            additional_notes: order.additionalNotes || 'None'
         };
+        
+        // Debug log to verify additional notes
+        console.log('Additional Notes being sent:', order.additionalNotes);
+        console.log('Full template params:', templateParams);
         
         // Replace these with your EmailJS service ID, template ID, and user ID
         await emailjs.send(
@@ -1408,7 +1563,8 @@ async function sendEmailViaEmailJS(order) {
 // Utility functions
 function findProduct(productId) {
     for (const categoryProducts of Object.values(allProducts)) {
-        const product = categoryProducts.find(p => p.id === productId);
+        // Check both itemNumber and id for backward compatibility
+        const product = categoryProducts.find(p => p.itemNumber === productId || p.id === productId);
         if (product) return product;
     }
     return null;
