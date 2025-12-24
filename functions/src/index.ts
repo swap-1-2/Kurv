@@ -67,7 +67,7 @@ export const sendOrderConfirmation = functions.https.onCall(
       const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; 
         margin: 0 auto;">
-        <h2 style="color: #667eea;">🛒 New Order Received!</h2>
+        <h2 style="color: #3B82F6;">🛒 New Order Received!</h2>
         
         <div style="background: #f8f9ff; padding: 20px; border-radius: 10px; 
           margin: 20px 0;">
@@ -96,7 +96,7 @@ export const sendOrderConfirmation = functions.https.onCall(
         <table style="width: 100%; border-collapse: collapse; 
           margin: 20px 0;">
           <thead>
-            <tr style="background: #667eea; color: white;">
+            <tr style="background: #3B82F6; color: white;">
               <th style="padding: 12px; text-align: left;">Item</th>
               <th style="padding: 12px; text-align: center;">Qty</th>
               <th style="padding: 12px; text-align: right;">Price</th>
@@ -111,7 +111,7 @@ export const sendOrderConfirmation = functions.https.onCall(
               <td colspan="3" style="padding: 15px; text-align: right;">
                 Total Amount:
               </td>
-              <td style="padding: 15px; text-align: right; color: #667eea;">
+              <td style="padding: 15px; text-align: right; color: #3B82F6;">
                 ₹${order.total}
               </td>
             </tr>
@@ -148,7 +148,7 @@ export const sendOrderConfirmation = functions.https.onCall(
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; 
             margin: 0 auto;">
-            <h2 style="color: #667eea;">✅ Order Confirmed!</h2>
+            <h2 style="color: #3B82F6;">✅ Order Confirmed!</h2>
             
             <p>Dear Customer,</p>
             <p>Thank you for your order! We've received your order and will 
@@ -178,7 +178,7 @@ export const sendOrderConfirmation = functions.https.onCall(
             <table style="width: 100%; border-collapse: collapse; 
               margin: 20px 0;">
               <thead>
-                <tr style="background: #667eea; color: white;">
+                <tr style="background: #3B82F6; color: white;">
                   <th style="padding: 12px; text-align: left;">Item</th>
                   <th style="padding: 12px; text-align: center;">Qty</th>
                   <th style="padding: 12px; text-align: right;">Price</th>
@@ -193,7 +193,7 @@ export const sendOrderConfirmation = functions.https.onCall(
                   <td colspan="3" style="padding: 15px; text-align: right;">
                     Total Amount:
                   </td>
-                  <td style="padding: 15px; text-align: right; color: #667eea;">
+                  <td style="padding: 15px; text-align: right; color: #3B82F6;">
                     ₹${order.total}
                   </td>
                 </tr>

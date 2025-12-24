@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kurv Admin Panel</title>
+    <title>SWARUP Admin Panel</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <!-- Firebase SDKs -->
@@ -19,7 +19,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -41,10 +41,7 @@
         .admin-header h1 {
             font-size: 42px;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #000000;
         }
         
         .admin-header p {
@@ -60,7 +57,7 @@
         }
         
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
             padding: 25px;
             border-radius: 15px;
             color: white;
@@ -119,7 +116,7 @@
         }
         
         .tab-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
             color: white;
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
@@ -154,7 +151,7 @@
         }
         
         .form-section h2 i {
-            color: #667eea;
+            color: #3B82F6;
         }
         
         .form-grid {
@@ -193,7 +190,7 @@
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #3B82F6;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
@@ -216,7 +213,7 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
             color: white;
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
@@ -258,7 +255,7 @@
         
         .data-table h3 {
             padding: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
             color: white;
             font-size: 24px;
             display: flex;
@@ -342,6 +339,17 @@
             padding: 8px 16px;
             font-size: 13px;
             border-radius: 8px;
+            margin: 2px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        table td {
+            vertical-align: middle;
+        }
+        
+        table td:last-child {
+            white-space: nowrap;
         }
         
         .color-preview {
@@ -374,7 +382,7 @@
         
         .spinner {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border-top: 4px solid #3B82F6;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -508,7 +516,7 @@
                 font-weight: bold;
                 text-transform: uppercase;
                 font-size: 11px;
-                color: #667eea;
+                color: #3B82F6;
                 display: block;
                 margin-bottom: 5px;
             }
@@ -560,9 +568,9 @@
         <div class="admin-header">
             <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 10px;">
                 <img src="swarup-logo.png" alt="Swarup" style="height: 60px; object-fit: contain;">
-                <h1 style="margin: 0;">Swati Enterprises Admin Panel</h1>
+                <h1 style="margin: 0; color: #000000;">SWARUP Solutions Admin Panel</h1>
             </div>
-            <p>Manage your products, categories, and orders with ease</p>
+            <p>Manage your products, categories, and enquiries with ease</p>
             
             <div class="stats-grid">
                 <div class="stat-card">
@@ -578,7 +586,7 @@
                 <div class="stat-card">
                     <i class="fas fa-shopping-cart"></i>
                     <div class="stat-number" id="totalOrders">0</div>
-                    <div class="stat-label">Orders</div>
+                    <div class="stat-label">Enquiries</div>
                 </div>
             </div>
         </div>
@@ -590,8 +598,14 @@
             <button class="tab-btn" onclick="switchTab('products')">
                 <i class="fas fa-box"></i> Products
             </button>
+            <button class="tab-btn" onclick="switchTab('services')">
+                <i class="fas fa-cogs"></i> Services
+            </button>
+            <button class="tab-btn" onclick="switchTab('solutions')">
+                <i class="fas fa-lightbulb"></i> Solutions
+            </button>
             <button class="tab-btn" onclick="switchTab('orders')">
-                <i class="fas fa-receipt"></i> Orders
+                <i class="fas fa-receipt"></i> Enquiries
             </button>
         </div>
         
@@ -611,16 +625,15 @@
                             <input type="text" id="categoryName" placeholder="e.g., Fruits & Vegetables">
                         </div>
                         <div class="form-group">
-                            <label>Icon (Emoji)</label>
-                            <input type="text" id="categoryIcon" placeholder="🥬" maxlength="2">
+                            <label>Icon URL</label>
+                            <input type="text" id="categoryIcon" placeholder="https://example.com/icon.png">
                         </div>
                         <div class="form-group">
-                            <label>Description</label>
-                            <input type="text" id="categoryDescription" placeholder="Fresh Produce">
-                        </div>
-                        <div class="form-group">
-                            <label>Color</label>
-                            <input type="color" id="categoryColor" value="#4CAF50">
+                            <label>Or Upload Icon Image</label>
+                            <input type="file" id="categoryIconFile" accept="image/*" onchange="handleCategoryIconUpload(event)">
+                            <small style="color: #666; margin-top: 5px; display: block;">
+                                Upload an image file (JPG, PNG, etc.) - it will be converted to a data URL
+                            </small>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary" id="categorySaveBtn">
@@ -641,14 +654,12 @@
                                 <th>ID</th>
                                 <th>Name</th>
                                 <th>Icon</th>
-                                <th>Description</th>
-                                <th>Color</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="categoriesTableBody">
                             <tr>
-                                <td colspan="6" class="loading-spinner">
+                                <td colspan="4" class="loading-spinner">
                                     <div class="spinner"></div>
                                     <p style="margin-top: 15px;">Loading categories...</p>
                                 </td>
@@ -677,20 +688,31 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Sub Category</label>
-                            <input type="text" id="productSubCategory" placeholder="e.g., Fresh Fruits, Citrus">
-                        </div>
-                        <div class="form-group">
                             <label>Product Name</label>
                             <input type="text" id="productName" placeholder="e.g., Organic Banana">
+                        </div>
+                        <div class="form-group">
+                            <label>Short Description</label>
+                            <input type="text" id="productSubCategory" placeholder="e.g., Fresh Fruits, Citrus">
                         </div>
                         <div class="form-group">
                             <label>Make</label>
                             <input type="text" id="productMake" placeholder="e.g., Brand or Manufacturer">
                         </div>
-                        <div class="form-group">
-                            <label>Specification</label>
-                            <input type="text" id="productSpecification" placeholder="e.g., Premium Quality, Grade A">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Specifications</label>
+                            <textarea id="productSpecification" rows="4" placeholder="Enter specifications (one per line):
+• Material: Copper
+• Size: 10mm
+• Voltage Rating: 1000V
+• Temperature Range: -40°C to 85°C"></textarea>
+                            <small style="color: #666; margin-top: 5px; display: block;">
+                                Enter specifications line by line. Use bullet points (•) or dashes (-) for better formatting.
+                            </small>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Description</label>
+                            <textarea id="productDescription" rows="3" placeholder="Detailed product description..."></textarea>
                         </div>
                         <div class="form-group">
                             <label>Price (₹)</label>
@@ -707,11 +729,15 @@
                             <label>Unit Quantity</label>
                             <input type="text" id="productUnitQty" placeholder="e.g., 1, 500g, 1L">
                         </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label>Image URL (or Emoji)</label>
-                            <input type="text" id="productImage" placeholder="https://example.com/image.jpg or 🍌">
+                        <div class="form-group">
+                            <label>Image URL</label>
+                            <input type="text" id="productImage" placeholder="https://example.com/image.jpg">
+                        </div>
+                        <div class="form-group">
+                            <label>Or Upload Image</label>
+                            <input type="file" id="productImageFile" accept="image/*" onchange="handleProductImageUpload(event)">
                             <small style="color: #666; margin-top: 5px; display: block;">
-                                Enter an image URL or emoji. If URL, image will be displayed. Otherwise, emoji will be used.
+                                Upload an image file - it will be compressed and converted to a data URL
                             </small>
                         </div>
                     </div>
@@ -755,15 +781,168 @@
             </div>
         </div>
         
-        <!-- Orders Tab -->
-        <div id="orders-tab" class="tab-content">
+        <!-- Services Tab -->
+        <div id="services-tab" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-cogs"></i> Add/Edit Service</h2>
+                <form id="serviceForm" onsubmit="saveService(event)">
+                    <input type="hidden" id="serviceEditId" value="">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Service ID *</label>
+                            <input type="text" id="serviceId" placeholder="e.g., cable-installation" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Service Title *</label>
+                            <input type="text" id="serviceTitle" placeholder="e.g., Cable Installation" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Icon URL</label>
+                            <input type="text" id="serviceIcon" placeholder="https://example.com/icon.png">
+                        </div>
+                        <div class="form-group">
+                            <label>Or Upload Icon Image</label>
+                            <input type="file" id="serviceIconFile" accept="image/*" onchange="handleServiceIconUpload(event)">
+                            <small style="color: #666; margin-top: 5px; display: block;">
+                                Upload an image file - it will be compressed and converted to a data URL
+                            </small>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Short Description *</label>
+                            <textarea id="serviceDescription" placeholder="Brief overview of the service" rows="2" required></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Description</label>
+                            <textarea id="serviceDetailedDescription" placeholder="Comprehensive information about the service" rows="5"></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Key Features</label>
+                            <textarea id="serviceSpecification" placeholder="• Feature 1&#10;• Feature 2&#10;• Feature 3" rows="4"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="serviceSaveBtn">
+                        <i class="fas fa-plus"></i> Add Service
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="serviceCancelBtn" style="display: none;" onclick="cancelServiceEdit()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </form>
+            </div>
+            
             <div class="data-table">
-                <h3><i class="fas fa-receipt"></i> All Orders</h3>
+                <h3><i class="fas fa-cogs"></i> All Services</h3>
                 <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
-                                <th>Order ID</th>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Icon</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="servicesTableBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px;">
+                                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #3B82F6;"></i>
+                                    <p style="margin-top: 10px; color: #666;">Loading services...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Solutions Tab -->
+        <div id="solutions-tab" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-lightbulb"></i> Add/Edit Solution</h2>
+                <form id="solutionForm" onsubmit="saveSolution(event)">
+                    <input type="hidden" id="solutionEditId" value="">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Solution ID *</label>
+                            <input type="text" id="solutionId" placeholder="e.g., industrial-solutions" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Solution Title *</label>
+                            <input type="text" id="solutionTitle" placeholder="e.g., Industrial Solutions" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Icon URL</label>
+                            <input type="text" id="solutionIcon" placeholder="https://example.com/icon.png">
+                        </div>
+                        <div class="form-group">
+                            <label>Or Upload Icon Image</label>
+                            <input type="file" id="solutionIconFile" accept="image/*" onchange="handleSolutionIconUpload(event)">
+                            <small style="color: #666; margin-top: 5px; display: block;">
+                                Upload an image file - it will be compressed and converted to a data URL
+                            </small>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Short Description *</label>
+                            <textarea id="solutionDescription" placeholder="Brief overview of the solution" rows="2" required></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Description</label>
+                            <textarea id="solutionDetailedDescription" placeholder="Comprehensive information about the solution" rows="5"></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Highlights</label>
+                            <textarea id="solutionSpecification" placeholder="• Highlight 1&#10;• Highlight 2&#10;• Highlight 3" rows="4"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="solutionSaveBtn">
+                        <i class="fas fa-plus"></i> Add Solution
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="solutionCancelBtn" style="display: none;" onclick="cancelSolutionEdit()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </form>
+            </div>
+            
+            <div class="data-table">
+                <h3><i class="fas fa-lightbulb"></i> All Solutions</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Icon</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="solutionsTableBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px;">
+                                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #3B82F6;"></i>
+                                    <p style="margin-top: 10px; color: #666;">Loading solutions...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Enquiries Tab -->
+        <div id="orders-tab" class="tab-content">
+            <div class="data-table">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0;"><i class="fas fa-receipt"></i> All Enquiries</h3>
+                    <button class="btn" onclick="downloadOrdersExcel()" style="background: #10B981;">
+                        <i class="fas fa-download"></i> Download Excel
+                    </button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Enquiry ID</th>
                                 <th>Date</th>
                                 <th>Customer</th>
                                 <th>Total</th>
@@ -775,7 +954,7 @@
                             <tr>
                                 <td colspan="6" class="loading-spinner">
                                     <div class="spinner"></div>
-                                    <p style="margin-top: 15px;">Loading orders...</p>
+                                    <p style="margin-top: 15px;">Loading enquiries...</p>
                                 </td>
                             </tr>
                         </tbody>

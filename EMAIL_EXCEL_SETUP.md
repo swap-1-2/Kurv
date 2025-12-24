@@ -83,7 +83,7 @@ New Enquiry {{order_id}} - Swati Enterprises
     </p>
 </div>
 
-<div style="background: #fff; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #667eea;">
+<div style="background: #fff; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3B82F6;">
     <h3>📋 Detailed Item List</h3>
     <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.6;">{{order_items_text}}</pre>
 </div>

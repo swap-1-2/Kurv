@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swati Enterprises - Listen | Think | Resolve</title>
-    <meta name="description" content="Swati Enterprises - Your trusted partner for quality products.">
+    <title>SWARUP - Solutions</title>
+    <meta name="description" content="SWARUP - Solutions for your business needs.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23ff6b6b'/><text x='50' y='60' text-anchor='middle' font-size='45' fill='white'>🛒</text></svg>">
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -19,92 +19,155 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
 <body>
-    <!-- Header with Cart Icon -->
-    <header class="header" id="appHeader" style="display: none;">
-        <div class="header-container">
-            <h1 class="logo">
-                <img src="swarup-logo.png" alt="Swarup" style="height: 40px; margin-right: 10px; vertical-align: middle;">
-                Swati Enterprises
-            </h1>
-            <div class="header-right">
-                <button class="enquire-btn" onclick="requireAuth(showCart)">
-                    <i class="fas fa-paper-plane"></i>
-                    <span>Enquire</span>
-                </button>
-                <div class="cart-icon-container" onclick="requireAuth(showCart)">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-badge" id="cartBadge">0</span>
+    <!-- Professional Header -->
+    <header class="pro-header" id="appHeader">
+        <div class="header-wrapper">
+            <div class="brand-section">
+                <img src="swarup-logo.png" alt="Swarup" class="brand-logo">
+                <div class="brand-text">
+                    <h1>SWARUP</h1>
+                    <p style="font-size: 0.75rem; margin-top: -5px;">Solutions</p>
                 </div>
-                <button class="logout-btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
+            </div>
+            <div class="header-actions" style="display: flex; align-items: center; gap: 0.75rem;">
+                <button class="cart-btn" onclick="showAddress()" style="display: flex; align-items: center; gap: 0.3rem;">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Enquiry</span>
+                </button>
+                <button class="cart-btn" onclick="showCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartBadge">0</span>
                 </button>
             </div>
         </div>
     </header>
 
     <div class="container" id="app">
-        <!-- Combined Launch & Auth Screen -->
-        <section id="launch" class="section">
-            <div class="launch-screen">
-                <div class="launch-content">
-                    <div class="company-branding">
-                        <div class="logo-container">
-                            <img src="swarup-logo.png" alt="Swarup" class="main-logo">
-                            <h1 class="company-name">Swati Enterprises</h1>
-                        </div>
-                        <h2 class="main-slogan">Listen | Think | Resolve</h2>
-                        <p class="tagline">Dealer of Cable Terminals, Connectors, Cable Glands, Crimping System & Accessories</p>
-                        <div class="business-categories">
-                            <div class="category-badge">Cable Glands</div>
-                            <div class="category-badge">Connectors & Sheet Terminals</div>
-                            <div class="category-badge">Tools & Accessories</div>
-                        </div>
+        <!-- Home Page with Services, Trading, Solutions -->
+        <section id="home" class="section">
+            <div class="hero-banner">
+                <div class="hero-content" style="display: flex; align-items: center; gap: 2rem;">
+                    <img src="swarup-logo.png" alt="SWARUP Logo" style="width: 120px; height: 120px; object-fit: contain;">
+                    <div>
+                        <h1 class="hero-title" style="margin-bottom: 0.2rem;">SWARUP</h1>
+                        <p class="hero-description" style="font-size: 1rem; font-weight: 400; color: #ffffff; opacity: 0.95; letter-spacing: 2px; text-transform: uppercase; margin-top: 0;">Solutions</p>
                     </div>
-                    
-                    <div class="auth-form">
-                        <input type="tel" id="phone" placeholder="Enter mobile number (+91)" class="phone-input-fluid" maxlength="15">
-                        
-                        <!-- reCAPTCHA container - hidden initially -->
-                        <div id="recaptcha-container" style="margin: 15px 0; display: none;"></div>
-                        
-                        <button type="button" onclick="sendFirebaseOtp()" class="send-otp-btn-fluid" id="sendOtpBtn">
-                            Send OTP
-                        </button>
-                        
-                        <!-- Quick Test Login Button -->
-                        <button type="button" onclick="quickTestLogin()" class="send-otp-btn-fluid" style="background: #48bb78; margin-top: 10px;">
-                            🚀 Quick Test Login (Skip OTP)
-                        </button>
-                        
-                        <div id="otpSection" class="otp-section-fluid" style="display: none;">
-                            <p class="otp-display-fluid">Enter OTP sent to your phone</p>
-                            <input type="text" id="otpInput" placeholder="Enter 6-digit OTP" maxlength="6" class="otp-input-fluid">
-                            <button type="button" onclick="verifyFirebaseOtp()" class="verify-otp-btn-fluid">
-                                Verify OTP
-                            </button>
-                        </div>
+                </div>
+            </div>
+
+            <div class="services-container">
+                <!-- Services Section -->
+                <div class="service-card" onclick="showServicesDetails()">
+                    <div class="service-icon">
+                        <i class="fas fa-tools"></i>
                     </div>
-                    
-                    <div class="terms-text">
-                        By continuing, you agree to our <a href="#" class="terms-link">Terms of Service</a> & <a href="#" class="terms-link">Privacy Policy</a>.
+                    <h2>Services</h2>
+                    <p>Professional installation, maintenance, and technical support for all our products</p>
+                    <button class="explore-btn">Learn More <i class="fas fa-arrow-right"></i></button>
+                </div>
+
+                <!-- Trading Section -->
+                <div class="service-card" onclick="showCategories()">
+                    <div class="service-icon">
+                        <i class="fas fa-shopping-bag"></i>
                     </div>
+                    <h2>Trading</h2>
+                    <p>Browse our extensive catalog of cable terminals, connectors, and accessories</p>
+                    <button class="explore-btn">View Products <i class="fas fa-arrow-right"></i></button>
+                </div>
+
+                <!-- Solutions Section -->
+                <div class="service-card" onclick="showSolutionsDetails()">
+                    <div class="service-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h2>Solutions</h2>
+                    <p>Custom solutions tailored to your specific industrial requirements</p>
+                    <button class="explore-btn">Discover <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Company Info Section -->
+            <div class="company-highlights">
+                <div class="highlight-item">
+                    <i class="fas fa-award"></i>
+                    <h3>Quality Products</h3>
+                    <p>Premium industrial components</p>
+                </div>
+                <div class="highlight-item">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Fast Response</h3>
+                    <p>Quick response to your queries</p>
+                </div>
+                <div class="highlight-item">
+                    <i class="fas fa-user-tie"></i>
+                    <h3>Expert Advice</h3>
+                    <p>Professional consultation available</p>
                 </div>
             </div>
         </section>
 
-        <!-- Hidden Auth Section (not used anymore) -->
-        <section id="auth" class="section hidden" style="display: none;">
+        <!-- Services Details Section -->
+        <section id="services-details" class="section hidden">
+            <div class="modern-header">
+                <button class="back-btn" onclick="showHome()">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <h1 class="header-title">Our Services</h1>
+            </div>
+            <div class="content-wrapper">
+                <div class="service-detail-card">
+                    <i class="fas fa-wrench"></i>
+                    <h3>Installation Services</h3>
+                    <p>Professional installation of cable systems and connectors by certified technicians</p>
+                </div>
+                <div class="service-detail-card">
+                    <i class="fas fa-cogs"></i>
+                    <h3>Maintenance & Support</h3>
+                    <p>Regular maintenance programs to ensure optimal performance of your systems</p>
+                </div>
+                <div class="service-detail-card">
+                    <i class="fas fa-user-tie"></i>
+                    <h3>Technical Consultation</h3>
+                    <p>Expert advice on product selection and system design</p>
+                </div>
+            </div>
         </section>
 
-        <!-- Categories Section -->
-        <section id="categories" class="section">
+        <!-- Solutions Details Section -->
+        <section id="solutions-details" class="section hidden">
+            <div class="modern-header">
+                <button class="back-btn" onclick="showHome()">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <h1 class="header-title">Custom Solutions</h1>
+            </div>
+            <div class="content-wrapper">
+                <div class="solution-card">
+                    <i class="fas fa-industry"></i>
+                    <h3>Industrial Solutions</h3>
+                    <p>Comprehensive cable management solutions for manufacturing facilities</p>
+                </div>
+                <div class="solution-card">
+                    <i class="fas fa-building"></i>
+                    <h3>Commercial Projects</h3>
+                    <p>Scalable solutions for commercial buildings and infrastructure</p>
+                </div>
+                <div class="solution-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Power Distribution</h3>
+                    <p>Complete power distribution systems with quality connectors</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section (Under Trading) -->
+        <section id="categories" class="section hidden">
             <div class="modern-header">
                 <div class="header-content">
-                    <div>
-                        <h1 class="header-title">Select Category</h1>
-                        <p class="header-subtitle">Choose from our wide range of products</p>
-                    </div>
+                    <button class="back-btn" onclick="showHome()">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </button>
                     <div class="view-toggle">
                         <button class="view-btn" onclick="reloadData()" title="Reload categories from database" style="margin-right: 10px;">
                             <i class="fas fa-sync-alt"></i>
@@ -116,6 +179,10 @@
                             <i class="fas fa-list"></i>
                         </button>
                     </div>
+                </div>
+                <div>
+                    <h1 class="header-title">Product Categories</h1>
+                    <p class="header-subtitle">Browse our product range</p>
                 </div>
             </div>
             <div class="categories-grid" id="categoryGrid"></div>
@@ -129,14 +196,6 @@
                         <i class="fas fa-arrow-left"></i>
                         Back
                     </button>
-                    <div class="view-toggle">
-                        <button class="view-btn active" id="gridViewBtn" onclick="setViewMode('grid')">
-                            <i class="fas fa-th"></i>
-                        </button>
-                        <button class="view-btn" id="listViewBtn" onclick="setViewMode('list')">
-                            <i class="fas fa-list"></i>
-                        </button>
-                    </div>
                 </div>
                 <div>
                     <h1 class="header-title" id="catalogTitle">Products</h1>
@@ -146,11 +205,134 @@
             <div class="catalog-grid" id="catalogGrid"></div>
         </section>
 
+        <!-- Product Details Section -->
+        <section id="product-details" class="section hidden">
+            <div class="modern-header">
+                <div class="header-content">
+                    <button class="back-btn" onclick="showCatalogFromDetails()">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Products
+                    </button>
+                </div>
+            </div>
+            <div class="product-details-container">
+                <div class="product-details-main">
+                    <div class="product-details-image">
+                        <div id="productDetailsImage" class="product-image-large"></div>
+                    </div>
+                    <div class="product-details-info">
+                        <h1 id="productDetailsName" class="product-name"></h1>
+                        <p id="productDetailsMake" class="product-make"></p>
+                        <div class="product-price-section">
+                            <span class="product-price" id="productDetailsPrice">₹0.00</span>
+                            <span class="product-unit" id="productDetailsUnit"></span>
+                        </div>
+                        <div id="productDetailsDescription" class="product-description"></div>
+                        
+                        <div class="product-specifications">
+                            <h3><i class="fas fa-list-ul"></i> Specifications</h3>
+                            <div id="productDetailsSpecs" class="specs-list"></div>
+                        </div>
+                        
+                        <div class="product-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-tag"></i>
+                                <span>Item #: <strong id="productDetailsItemNumber"></strong></span>
+                            </div>
+                            <div class="meta-item" id="productDetailsSubCategoryMeta">
+                                <i class="fas fa-folder"></i>
+                                <span id="productDetailsSubCategory"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="product-actions">
+                            <div class="quantity-controls-large">
+                                <button onclick="decreaseProductQuantity()" class="qty-btn">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="quantity-display" id="productDetailsQuantity">0</span>
+                                <button onclick="increaseProductQuantity()" class="qty-btn">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <button onclick="addToCartFromDetails()" class="btn-add-to-cart">
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Details Page -->
+        <section id="service-details-page" class="section hidden">
+            <div class="product-details-container">
+                <div class="modern-header">
+                    <button class="back-btn" onclick="showServicesDetails()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="product-details-content">
+                    <div class="product-image-section">
+                        <div class="product-main-image" id="serviceDetailsImageContainer">
+                            <i class="fas fa-cogs" id="serviceDetailsIcon" style="font-size: 120px; color: #1E40AF;"></i>
+                        </div>
+                    </div>
+                    <div class="product-details-info">
+                        <h1 id="serviceDetailsTitle" class="product-name"></h1>
+                        <div id="serviceDetailsDescription" class="product-description" style="margin-top: 1rem;"></div>
+                        
+                        <div class="product-description" id="serviceDetailedDescSection" style="display: none;">
+                            <h3><i class="fas fa-info-circle"></i> Description</h3>
+                            <div id="serviceDetailsDetailedDesc"></div>
+                        </div>
+                        
+                        <div class="product-specifications" id="serviceSpecsSection" style="display: none;">
+                            <h3><i class="fas fa-star"></i> Key Features</h3>
+                            <div id="serviceDetailsSpecs" class="specs-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Solution Details Page -->
+        <section id="solution-details-page" class="section hidden">
+            <div class="product-details-container">
+                <div class="modern-header">
+                    <button class="back-btn" onclick="showSolutionsDetails()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="product-details-content">
+                    <div class="product-image-section">
+                        <div class="product-main-image" id="solutionDetailsImageContainer">
+                            <i class="fas fa-lightbulb" id="solutionDetailsIcon" style="font-size: 120px; color: #1E40AF;"></i>
+                        </div>
+                    </div>
+                    <div class="product-details-info">
+                        <h1 id="solutionDetailsTitle" class="product-name"></h1>
+                        <div id="solutionDetailsDescription" class="product-description" style="margin-top: 1rem;"></div>
+                        
+                        <div class="product-description" id="solutionDetailedDescSection" style="display: none;">
+                            <h3><i class="fas fa-info-circle"></i> Description</h3>
+                            <div id="solutionDetailsDetailedDesc"></div>
+                        </div>
+                        
+                        <div class="product-specifications" id="solutionSpecsSection" style="display: none;">
+                            <h3><i class="fas fa-lightbulb"></i> Highlights</h3>
+                            <div id="solutionDetailsSpecs" class="specs-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Cart Section -->
         <section id="cart" class="section hidden">
             <div class="modern-header">
                 <div class="header-content">
-                    <button class="back-btn" onclick="showCategories()">
+                    <button class="back-btn" onclick="showHome()">
                         <i class="fas fa-arrow-left"></i>
                         Back
                     </button>
@@ -162,24 +344,11 @@
             </div>
             <div id="cartItems" class="cart-items"></div>
             <div class="cart-summary">
-                <div class="customer-details">
-                    <div class="input-group">
-                        <label for="customerEmail">Email Address *</label>
-                        <input type="email" id="customerEmail" required>
-                        <small class="input-help">We'll send you an enquiry confirmation</small>
-                        <small class="input-error" id="emailError" style="display: none; color: #ff4757; font-size: 0.85rem; margin-top: 0.25rem;">Please enter a valid email address</small>
-                    </div>
-                    <div class="input-group" style="margin-top: 1rem;">
-                        <label for="additionalNotes">Additional Requirements (Optional)</label>
-                        <textarea id="additionalNotes" rows="3" placeholder="Enter any specific requirements, quantities, or questions..."></textarea>
-                        <small class="input-help">Let us know if you need any specific details or have questions</small>
-                    </div>
-                </div>
                 <div class="total-amount">
                     <strong>Total: ₹<span id="cartTotal">0.00</span></strong>
                 </div>
-                <button onclick="placeOrder()" class="btn-primary place-order-btn" id="placeOrderBtn">
-                    <i class="fas fa-paper-plane"></i> Submit Enquiry
+                <button onclick="showAddress()" class="btn-primary place-order-btn">
+                    <i class="fas fa-arrow-right"></i> Next
                 </button>
             </div>
         </section>
@@ -194,25 +363,40 @@
                     </button>
                 </div>
                 <div>
-                    <h1 class="header-title"><i class="fas fa-map-marker-alt"></i> Delivery Address</h1>
-                    <p class="header-subtitle">Enter delivery details (all fields are optional)</p>
+                    <h1 class="header-title"><i class="fas fa-address-card"></i> Contact</h1>
+                    <p class="header-subtitle">Enter your contact details</p>
                 </div>
             </div>
             <div class="address-form">
                 <div class="form-section">
-                    <h3>Contact Information (Optional)</h3>
+                    <h3>Contact Information *</h3>
                     
-                    <label for="fullName">Full Name</label>
-                    <input type="text" id="fullName">
+                    <label for="fullName">Full Name *</label>
+                    <input type="text" id="fullName" required>
+                    <small class="input-error" id="nameError" style="display: none; color: #ff4757; font-size: 0.85rem; margin-top: 0.25rem;">Please enter your full name</small>
                     
-                    <label for="deliveryPhone">Mobile Number</label>
-                    <input type="tel" id="deliveryPhone">
+                    <label for="customerEmail">Email Address *</label>
+                    <input type="email" id="customerEmail" required>
+                    <small class="input-error" id="emailError" style="display: none; color: #ff4757; font-size: 0.85rem; margin-top: 0.25rem;">Please enter a valid email address</small>
+                    
+                    <label for="deliveryPhone">Mobile Number *</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" value="+91" readonly style="width: 60px; background-color: #f5f5f5; cursor: not-allowed;">
+                        <input type="tel" id="deliveryPhone" placeholder="10-digit mobile number" maxlength="10" required style="flex: 1;">
+                    </div>
+                    <small class="input-error" id="phoneError" style="display: none; color: #ff4757; font-size: 0.85rem; margin-top: 0.25rem;">Please enter a valid 10-digit mobile number</small>
                     
                     <label for="companyName">Company Name</label>
                     <input type="text" id="companyName">
                     
                     <label for="gstin">GSTIN</label>
                     <input type="text" id="gstin">
+                </div>
+                
+                <div style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+                    <label for="additionalNotes" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Additional Requirements (Optional)</label>
+                    <textarea id="additionalNotes" rows="4" placeholder="Enter any specific requirements, quantities, or questions..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-family: inherit; resize: vertical;"></textarea>
+                    <small class="input-help" style="color: #666; font-size: 0.85rem; margin-top: 0.5rem; display: block;">Let us know if you need any specific details or have questions</small>
                 </div>
                 
                 <div class="form-section">
@@ -249,7 +433,7 @@
         <section id="profile" class="section hidden">
             <div class="modern-header">
                 <div class="header-content">
-                    <button class="back-btn" onclick="showCategories()">
+                    <button class="back-btn" onclick="showHome()">
                         <i class="fas fa-arrow-left"></i>
                         Back
                     </button>
@@ -258,27 +442,15 @@
                 <div class="profile-card">
                     <div class="profile-header">
                         <div class="company-logo-section">
-                            <img src="swarup-logo.png" alt="Swati Enterprises Logo" class="company-logo">
+                            <img src="swarup-logo.png" alt="SWARUP Logo" class="company-logo">
                             <div class="company-info">
-                                <h2>Swati Enterprises</h2>
-                                <p class="company-tagline">Listen | Think | Resolve</p>
+                                <h2>SWARUP</h2>
+                                <p class="company-tagline">Solutions</p>
                             </div>
                         </div>
                     </div>
                     
                     <div class="profile-details">
-                        <div class="detail-item">
-                            <i class="fas fa-briefcase"></i>
-                            <div class="detail-content">
-                                <label>Business</label>
-                                <span style="line-height: 1.6;">Dealer of Cable Terminals, Connectors, Cable Glands, Crimping System & Accessories<br><br>
-                                <strong>Main Product Categories:</strong><br>
-                                • Cable Glands<br>
-                                • Connectors & Sheet Terminals<br>
-                                • Tools & Accessories</span>
-                            </div>
-                        </div>
-                        
                         <div class="detail-item">
                             <i class="fas fa-map-marker-alt"></i>
                             <div class="detail-content">
@@ -302,7 +474,7 @@
                             <i class="fas fa-phone"></i>
                             <div class="detail-content">
                                 <label>Phone</label>
-                                <span><a href="tel:+919075059736" style="color: #667eea; text-decoration: none;">+91 9075059736</a></span>
+                                <span><a href="tel:+917057059736" style="color: #3B82F6; text-decoration: none;">+91 7057059736</a></span>
                             </div>
                         </div>
                         
@@ -310,7 +482,7 @@
                             <i class="fas fa-envelope"></i>
                             <div class="detail-content">
                                 <label>Email</label>
-                                <span><a href="mailto:support@swarup.biz" style="color: #667eea; text-decoration: none;">support@swarup.biz</a></span>
+                                <span><a href="mailto:support@swarup.biz" style="color: #3B82F6; text-decoration: none;">support@swarup.biz</a></span>
                             </div>
                         </div>
                         
@@ -328,19 +500,14 @@
     </div>
 
     <!-- Navigation Bar -->
-    <nav class="bottom-nav" id="bottomNav" style="display: none;">
-        <button onclick="showCategories()" class="nav-item">
+    <nav class="bottom-nav" id="bottomNav">
+        <button onclick="showHome()" class="nav-item active">
             <i class="fas fa-home"></i>
             <span>Home</span>
         </button>
-        <button onclick="requireAuth(showCart)" class="nav-item">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Enquiry Cart</span>
-            <span class="nav-badge" id="navCartBadge">0</span>
-        </button>
-        <button onclick="requireAuth(showProfile)" class="nav-item">
+        <button onclick="showProfile()" class="nav-item">
             <i class="fas fa-address-book"></i>
-            <span>Contact</span>
+            <span>Contact Us</span>
         </button>
     </nav>
 

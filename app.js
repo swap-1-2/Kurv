@@ -99,6 +99,119 @@ async function loadProductsFromFirestore() {
     }
 }
 
+// Global arrays to store services and solutions
+let services = [];
+let solutions = [];
+
+async function loadSolutionsFromFirestore() {
+    try {
+        console.log('🔍 Loading solutions from Firestore...');
+        const snapshot = await db.collection('solutions').get();
+        solutions = [];
+        snapshot.forEach(doc => {
+            const solutionData = doc.data();
+            console.log('✅ Found solution:', solutionData);
+            solutions.push(solutionData);
+        });
+        console.log('📊 Total solutions loaded:', solutions.length);
+        console.log('📋 Solutions:', solutions);
+        
+        if (solutions.length === 0) {
+            console.warn('⚠️ No solutions found in Firestore! Please add solutions via admin panel.');
+        }
+        
+        // Render solutions on the page
+        renderSolutions();
+    } catch (error) {
+        console.error('❌ Error loading solutions:', error);
+        showToast('Error loading solutions: ' + error.message);
+    }
+}
+
+async function loadServicesFromFirestore() {
+    try {
+        console.log('🔍 Loading services from Firestore...');
+        const snapshot = await db.collection('services').get();
+        services = [];
+        snapshot.forEach(doc => {
+            const serviceData = doc.data();
+            console.log('✅ Found service:', serviceData);
+            services.push(serviceData);
+        });
+        console.log('📊 Total services loaded:', services.length);
+        console.log('📋 Services:', services);
+        
+        if (services.length === 0) {
+            console.warn('⚠️ No services found in Firestore! Please add services via admin panel.');
+        }
+        
+        // Render services on the page
+        renderServices();
+    } catch (error) {
+        console.error('❌ Error loading services:', error);
+        showToast('Error loading services: ' + error.message);
+    }
+}
+
+function renderServices() {
+    const servicesContainer = document.querySelector('#services-details .content-wrapper');
+    if (!servicesContainer) return;
+    
+    if (services.length === 0) {
+        servicesContainer.innerHTML = '<p style="text-align: center; color: #666;">No services available at the moment.</p>';
+        return;
+    }
+    
+    servicesContainer.innerHTML = services.map(service => {
+        // Check if icon is an image URL or Font Awesome class
+        const isImageUrl = service.icon && (service.icon.startsWith('http://') || service.icon.startsWith('https://') || service.icon.startsWith('data:'));
+        const iconDisplay = isImageUrl 
+            ? `<img src="${service.icon}" alt="${service.title}" style="width: 60px; height: 60px; object-fit: contain; margin-bottom: 1rem;">` 
+            : `<i class="fas ${service.icon || 'fa-cogs'}"></i>`;
+        
+        return `
+            <div class="service-detail-card" onclick="showServiceDetails('${service.id}')" style="cursor: pointer;">
+                ${iconDisplay}
+                <h3>${service.title}</h3>
+                <p>${service.description}</p>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderSolutions() {
+    const solutionsContainer = document.querySelector('#solutions-details .content-wrapper');
+    if (!solutionsContainer) return;
+    
+    if (solutions.length === 0) {
+        solutionsContainer.innerHTML = `
+            <div class="solution-card">
+                <i class="fas fa-info-circle"></i>
+                <h3>No Solutions Available</h3>
+                <p>Solutions will be displayed here once added via admin panel.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    solutionsContainer.innerHTML = solutions.map(solution => {
+        // Check if icon is an image URL or Font Awesome class
+        const isImageUrl = solution.icon && (solution.icon.startsWith('http://') || solution.icon.startsWith('https://') || solution.icon.startsWith('data:'));
+        const iconDisplay = isImageUrl 
+            ? `<img src="${solution.icon}" alt="${solution.title}" style="width: 60px; height: 60px; object-fit: contain; margin-bottom: 1rem;">` 
+            : `<i class="fas ${solution.icon || 'fa-lightbulb'}"></i>`;
+        
+        return `
+            <div class="solution-card" onclick="showSolutionDetails('${solution.id}')" style="cursor: pointer;">
+                ${iconDisplay}
+                <h3>${solution.title || 'Solution'}</h3>
+                <p>${solution.description || ''}</p>
+            </div>
+        `;
+    }).join('');
+}
+
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('App initializing...');
@@ -106,6 +219,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Load data from Firestore
     await loadCategoriesFromFirestore();
     await loadProductsFromFirestore();
+    await loadServicesFromFirestore();
+    await loadSolutionsFromFirestore();
     
     loadData();
     
@@ -123,31 +238,17 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     updateCartBadges();
     
-    // Load user data if logged in
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-        user = savedUser;
-        loadOrders();
-        showCategories();
-    } else {
-        // Show launch screen for new users
-        showLaunch();
-    }
+    // Show home page by default (no login required)
+    showHome();
     
     console.log('App initialized successfully');
-    
-    // Add testOTP to global scope for debugging
-    window.testOTP = testOTP;
     
     // Add debug functions to global scope
     window.clearAllData = function() {
         localStorage.clear();
         location.reload();
     };
-    
-    window.forceLogout = function() {
-        logout();
-    };
+
     
     window.testSendOtp = function() {
         console.log('Testing sendOtp directly...');
@@ -482,11 +583,11 @@ function quickTestLogin() {
 
 // Reload data from Firestore
 async function reloadData() {
-    showToast('🔄 Reloading data from Firestore...');
     await loadCategoriesFromFirestore();
     await loadProductsFromFirestore();
+    await loadServicesFromFirestore();
+    await loadSolutionsFromFirestore();
     renderCategories();
-    showToast('✅ Data reloaded successfully!');
 }
 
 // Add reload data to global scope
@@ -757,62 +858,58 @@ function updateNavigation() {
     // Add any navigation updates here if needed
 }
 
-// Launch and Auth functions
-function showLaunch() {
-    showSection('launch');
+// Navigation functions
+function showHome() {
+    hideAllSections();
+    document.getElementById('home').classList.remove('hidden');
+    updateNavActive('home');
+    
+    // Show navigation and header
     const bottomNav = document.getElementById('bottomNav');
     const appHeader = document.getElementById('appHeader');
-    if (bottomNav) bottomNav.style.display = 'none';
-    if (appHeader) appHeader.style.display = 'none';
-    
-    // Reset form state
-    resetAuthForm();
+    if (bottomNav) bottomNav.style.display = 'flex';
+    if (appHeader) appHeader.style.display = 'block';
 }
 
-function showLogin() {
-    // Since launch and auth are combined, just show launch
-    showLaunch();
+function showServicesDetails() {
+    hideAllSections();
+    document.getElementById('services-details').classList.remove('hidden');
 }
 
-function resetAuthForm() {
-    // Clear inputs
-    const phoneInput = document.getElementById('phone');
-    const otpInput = document.getElementById('otpInput');
-    if (phoneInput) phoneInput.value = '';
-    if (otpInput) otpInput.value = '';
-    
-    // Hide OTP section
-    const otpSection = document.getElementById('otpSection');
-    if (otpSection) otpSection.style.display = 'none';
-    
-    // Reset button text
-    const sendOtpBtn = document.getElementById('sendOtpBtn');
-    if (sendOtpBtn) sendOtpBtn.textContent = 'Send OTP';
+function showSolutionsDetails() {
+    hideAllSections();
+    document.getElementById('solutions-details').classList.remove('hidden');
 }
 
-function requireAuth(callback) {
-    if (!user) {
-        showToast('Please login to access this feature');
-        showLogin();
-        return;
-    }
-    callback();
+function hideAllSections() {
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(section => section.classList.add('hidden'));
+}
+
+function updateNavActive(activeNav) {
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    // Find and activate the matching nav item
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        const onclick = item.getAttribute('onclick');
+        if (onclick && onclick.includes(activeNav)) {
+            item.classList.add('active');
+        }
+    });
 }
 
 function showCategories() {
-    if (!user) {
-        showLogin();
-        return;
-    }
-    
     console.log('📱 Showing categories page...');
     console.log('📊 Available categories:', categories);
     
-    showSection('categories');
+    hideAllSections();
+    document.getElementById('categories').classList.remove('hidden');
     renderCategories();
     initializeCategoryViewButtons();
     
-    // Show navigation and header for authenticated users
+    // Show navigation and header
     const bottomNav = document.getElementById('bottomNav');
     const appHeader = document.getElementById('appHeader');
     if (bottomNav) bottomNav.style.display = 'flex';
@@ -822,7 +919,8 @@ function showCategories() {
 function showCategory(categoryId) {
     currentCategory = categoryId;
     products = allProducts[categoryId] || [];
-    showSection('catalog');
+    hideAllSections();
+    document.getElementById('catalog').classList.remove('hidden');
     
     // Initialize view mode buttons
     setTimeout(() => {
@@ -833,22 +931,89 @@ function showCategory(categoryId) {
 }
 
 function showCart() {
-    showSection('cart');
+    hideAllSections();
+    document.getElementById('cart').classList.remove('hidden');
     renderCart();
+    updateNavActive('cart');
 }
 
 function showOrders() {
-    showSection('orders');
+    hideAllSections();
+    document.getElementById('orders').classList.remove('hidden');
     renderOrders();
 }
 
 function showProfile() {
-    showSection('profile');
+    hideAllSections();
+    document.getElementById('profile').classList.remove('hidden');
     renderProfile();
+    updateNavActive('profile');
 }
 
 function showAddress() {
-    showSection('address');
+    // Allow access to contact form even with empty cart
+    // Users can make enquiries without adding items to cart
+    
+    hideAllSections();
+    document.getElementById('address').classList.remove('hidden');
+    
+    // Add real-time validation listeners
+    const nameInput = document.getElementById('fullName');
+    const emailInput = document.getElementById('customerEmail');
+    const phoneInput = document.getElementById('deliveryPhone');
+    const nameError = document.getElementById('nameError');
+    const emailError = document.getElementById('emailError');
+    const phoneError = document.getElementById('phoneError');
+    
+    if (nameInput && !nameInput.hasAttribute('data-listener-added')) {
+        nameInput.setAttribute('data-listener-added', 'true');
+        nameInput.addEventListener('blur', function() {
+            const name = this.value.trim();
+            if (!name) {
+                nameError.textContent = 'Full name is required';
+                nameError.style.display = 'block';
+            } else {
+                nameError.style.display = 'none';
+            }
+        });
+    }
+    
+    if (emailInput && !emailInput.hasAttribute('data-listener-added')) {
+        emailInput.setAttribute('data-listener-added', 'true');
+        emailInput.addEventListener('input', function() {
+            const email = this.value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && !emailRegex.test(email)) {
+                emailError.textContent = 'Please enter a valid email address';
+                emailError.style.display = 'block';
+            } else {
+                emailError.style.display = 'none';
+            }
+        });
+    }
+    
+    if (phoneInput && !phoneInput.hasAttribute('data-listener-added')) {
+        phoneInput.setAttribute('data-listener-added', 'true');
+        phoneInput.addEventListener('input', function() {
+            // Only allow digits
+            this.value = this.value.replace(/\D/g, '');
+            
+            const phone = this.value;
+            const phoneRegex = /^[6-9]\d{9}$/;
+            if (phone && !phoneRegex.test(phone)) {
+                if (phone.length < 10) {
+                    phoneError.textContent = 'Mobile number must be 10 digits';
+                } else if (!/^[6-9]/.test(phone)) {
+                    phoneError.textContent = 'Mobile number must start with 6, 7, 8, or 9';
+                } else {
+                    phoneError.textContent = 'Please enter a valid 10-digit Indian mobile number';
+                }
+                phoneError.style.display = 'block';
+            } else {
+                phoneError.style.display = 'none';
+            }
+        });
+    }
 }
 
 // View mode functions
@@ -919,7 +1084,7 @@ function renderCategories() {
                 <h2 style="color: #666; margin-bottom: 10px;">No Categories Yet</h2>
                 <p style="color: #999;">Please add categories via the admin panel to get started!</p>
                 <p style="color: #999; margin-top: 10px;">
-                    <a href="admin.html" target="_blank" style="color: #667eea; text-decoration: underline;">
+                    <a href="admin.html" target="_blank" style="color: #3B82F6; text-decoration: underline;">
                         Open Admin Panel
                     </a>
                 </p>
@@ -928,13 +1093,21 @@ function renderCategories() {
         return;
     }
     
-    grid.innerHTML = categories.map(category => `
-        <div class="category-card ${category.className}" onclick="showCategory('${category.id}')">
-            <div class="category-icon">${category.icon}</div>
-            <h3>${category.name}</h3>
-            <p>${category.description}</p>
-        </div>
-    `).join('');
+    grid.innerHTML = categories.map(category => {
+        // Check if icon is an image URL or data URL
+        const isImageUrl = category.icon && (category.icon.startsWith('http://') || category.icon.startsWith('https://') || category.icon.startsWith('data:image/'));
+        const iconDisplay = isImageUrl 
+            ? `<img src="${category.icon}" alt="${category.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;">` 
+            : category.icon;
+        
+        return `
+            <div class="category-card ${category.className}" onclick="showCategory('${category.id}')">
+                <div class="category-icon">${iconDisplay}</div>
+                <h3>${category.name}</h3>
+                <p>${category.description || ''}</p>
+            </div>
+        `;
+    }).join('');
     
     console.log('✅ Categories rendered successfully');
 }
@@ -952,80 +1125,43 @@ function renderCatalog() {
         catalogSubtitle.textContent = `Fresh ${category.name.toLowerCase()} products`;
     }
     
-    // Set container class based on view mode
-    catalogGrid.className = viewMode === 'list' ? 'catalog-list' : 'catalog-grid';
+    // Always use list view for products (Trading)
+    catalogGrid.className = 'catalog-list';
     
-    if (viewMode === 'list') {
-        // List view layout
-        catalogGrid.innerHTML = products.map(product => {
-            const isImageUrl = product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'));
-            const imageDisplay = isImageUrl 
-                ? `<img src="${product.image}" alt="${product.name}">` 
-                : product.image;
-            
-            const productId = product.itemNumber || product.id;
-            const unitDisplay = product.specification 
-                ? `${product.uomCode || product.unit} - ${product.specification}`
-                : (product.uomCode || product.unit);
-            
-            return `
-                <div class="product-card">
-                    <div class="product-image">${imageDisplay}</div>
-                    <div class="product-info">
-                        <h3>${product.name}</h3>
-                        ${product.subCategory ? `<p style="color: #888; font-size: 12px;">${product.subCategory}</p>` : ''}
-                        <p class="product-price">₹${product.price}/${unitDisplay}</p>
-                    </div>
-                    <div class="quantity-controls">
-                        <button onclick="decreaseQuantity('${productId}')" class="quantity-btn">-</button>
-                        <input type="number" 
-                               class="quantity-input" 
-                               value="${cart[productId] || 0}" 
-                               min="0" 
-                               max="99999999"
-                               onchange="updateQuantity('${productId}', this.value)"
-                               onclick="this.select()"
-                               title="Click to edit quantity">
-                        <button onclick="increaseQuantity('${productId}')" class="quantity-btn">+</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    } else {
-        // Grid view layout (default)
-        catalogGrid.innerHTML = products.map(product => {
-            const isImageUrl = product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'));
-            const imageDisplay = isImageUrl 
-                ? `<img src="${product.image}" alt="${product.name}">` 
-                : product.image;
-            
-            const productId = product.itemNumber || product.id;
-            const unitDisplay = product.specification 
-                ? `${product.uomCode || product.unit} - ${product.specification}`
-                : (product.uomCode || product.unit);
-            
-            return `
-                <div class="product-card">
-                    <div class="product-image">${imageDisplay}</div>
+    // List view layout for products
+    catalogGrid.innerHTML = products.map(product => {
+        const isImageUrl = product.image && (product.image.startsWith('http://') || product.image.startsWith('https://') || product.image.startsWith('data:'));
+        const imageDisplay = isImageUrl 
+            ? `<img src="${product.image}" alt="${product.name}">` 
+            : product.image;
+        
+        const productId = product.itemNumber || product.id;
+        const unitDisplay = product.uomCode || product.unit;
+        
+        return `
+            <div class="product-card" onclick="showProductDetails('${productId}')">
+                <div class="product-image">${imageDisplay}</div>
+                <div class="product-info">
                     <h3>${product.name}</h3>
-                    ${product.subCategory ? `<p style="color: #888; font-size: 12px; margin-bottom: 5px;">${product.subCategory}</p>` : ''}
+                    ${product.subCategory ? `<p style="color: #888; font-size: 12px;">${product.subCategory}</p>` : ''}
+                    ${product.make ? `<p style="color: #666; font-size: 11px; margin-top: 3px;"><strong>Make:</strong> ${product.make}</p>` : ''}
                     <p class="product-price">₹${product.price}/${unitDisplay}</p>
-                    <div class="quantity-controls">
-                        <button onclick="decreaseQuantity('${productId}')" class="quantity-btn">-</button>
-                        <input type="number" 
-                               class="quantity-input" 
-                               value="${cart[productId] || 0}" 
-                               min="0" 
-                               max="99999999"
-                               onchange="updateQuantity('${productId}', this.value)"
-                               onclick="this.select()"
-                               title="Click to edit quantity">
-                        <button onclick="increaseQuantity('${productId}')" class="quantity-btn">+</button>
-                    </div>
                 </div>
-            `;
-        }).join('');
-    }
+                <div class="quantity-controls" onclick="event.stopPropagation()">
+                    <button onclick="decreaseQuantity('${productId}')" class="quantity-btn">-</button>
+                    <input type="number" 
+                           class="quantity-input" 
+                           value="${cart[productId] || 0}" 
+                           min="0" 
+                           max="99999999"
+                           onchange="updateQuantity('${productId}', this.value)"
+                           onclick="this.select()"
+                           title="Click to edit quantity">
+                    <button onclick="increaseQuantity('${productId}')" class="quantity-btn">+</button>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 function renderCart() {
@@ -1297,12 +1433,6 @@ function updateCartBadges() {
 
 // Order functions
 function placeOrder() {
-    if (!user) {
-        showToast('Please login to submit an enquiry');
-        showLogin();
-        return;
-    }
-    
     // Allow enquiry even with empty cart
     // if (Object.keys(cart).length === 0) {
     //     showToast('Your cart is empty');
@@ -1352,9 +1482,68 @@ function placeOrder() {
 }
 
 async function confirmOrder() {
-    // Get address form values (all optional now)
-    const fullName = document.getElementById('fullName').value.trim();
-    const deliveryPhone = document.getElementById('deliveryPhone').value.trim();
+    // Get full name and validate
+    const fullNameInput = document.getElementById('fullName');
+    const nameError = document.getElementById('nameError');
+    const fullName = fullNameInput.value.trim();
+    
+    // Validate full name
+    if (!fullName) {
+        nameError.textContent = 'Full name is required';
+        nameError.style.display = 'block';
+        fullNameInput.focus();
+        return;
+    }
+    nameError.style.display = 'none';
+    
+    // Get email and validate
+    const customerEmailInput = document.getElementById('customerEmail');
+    const emailError = document.getElementById('emailError');
+    const customerEmail = customerEmailInput.value.trim();
+    
+    // Validate email
+    if (!customerEmail) {
+        emailError.textContent = 'Email address is required';
+        emailError.style.display = 'block';
+        customerEmailInput.focus();
+        return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(customerEmail)) {
+        emailError.textContent = 'Please enter a valid email address';
+        emailError.style.display = 'block';
+        customerEmailInput.focus();
+        return;
+    }
+    emailError.style.display = 'none';
+    
+    // Get mobile and validate
+    const deliveryPhoneInput = document.getElementById('deliveryPhone');
+    const phoneError = document.getElementById('phoneError');
+    const deliveryPhone = deliveryPhoneInput.value.trim();
+    
+    // Validate mobile number
+    if (!deliveryPhone) {
+        phoneError.textContent = 'Mobile number is required';
+        phoneError.style.display = 'block';
+        deliveryPhoneInput.focus();
+        return;
+    }
+    
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(deliveryPhone)) {
+        phoneError.textContent = 'Please enter a valid 10-digit Indian mobile number';
+        phoneError.style.display = 'block';
+        deliveryPhoneInput.focus();
+        return;
+    }
+    phoneError.style.display = 'none';
+    
+    // Store email for order
+    window.customerEmail = customerEmail;
+    
+    // Get address form values (optional fields)
     const companyName = document.getElementById('companyName').value.trim();
     const gstin = document.getElementById('gstin').value.trim();
     const streetAddress = document.getElementById('streetAddress').value.trim();
@@ -1362,14 +1551,15 @@ async function confirmOrder() {
     const postalCode = document.getElementById('postalCode').value.trim();
     const landmark = document.getElementById('landmark').value.trim();
     const addressType = document.getElementById('addressType').value;
+    const additionalNotes = document.getElementById('additionalNotes').value.trim();
     
-    // No validation - all fields are optional
-    // Users can submit enquiry with just email and notes
+    // Store additional notes
+    window.additionalNotes = additionalNotes;
     
-    // Save address (even if fields are empty)
+    // Save address with +91 prefix for phone
     currentAddress = {
-        fullName: fullName || 'Not provided',
-        phone: deliveryPhone || 'Not provided',
+        fullName: fullName,
+        phone: '+91' + deliveryPhone,
         companyName: companyName || 'Not provided',
         gstin: gstin || 'Not provided',
         streetAddress: streetAddress || 'Not provided',
@@ -1406,8 +1596,8 @@ async function confirmOrder() {
         total: total.toFixed(2),
         status: 'confirmed',
         address: currentAddress,
-        customerPhone: user,
-        customerEmail: window.customerEmail || 'customer@example.com',
+        customerPhone: currentAddress.phone,
+        customerEmail: window.customerEmail || customerEmail,
         additionalNotes: window.additionalNotes || ''
     };
     
@@ -1451,8 +1641,8 @@ async function sendOrderConfirmationEmail(order) {
             
             const emailData = {
                 order: order,
-                customerPhone: user,
-                customerEmail: window.customerEmail || 'customer@example.com'
+                customerPhone: order.customerPhone,
+                customerEmail: order.customerEmail
             };
             
             console.log('Sending enquiry confirmation via Firebase Functions...', order.id);
@@ -1526,7 +1716,7 @@ ${order.address.landmark ? 'Landmark: ' + order.address.landmark : ''}`;
             order_items_html: orderItemsHtml,
             order_items_text: textTable,
             order_csv: fullCsvContent,
-            customer_phone: order.customerPhone || user,
+            customer_phone: order.customerPhone,
             customer_name: order.address.fullName,
             customer_email: order.customerEmail,
             company_name: order.address.companyName || 'N/A',
@@ -1639,3 +1829,216 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+// Product Details functionality
+let currentProduct = null;
+
+function showProductDetails(productId) {
+    // Find the product from all products
+    let product = null;
+    for (const categoryProducts of Object.values(allProducts)) {
+        product = categoryProducts.find(p => (p.itemNumber || p.id) === productId);
+        if (product) break;
+    }
+    
+    if (!product) {
+        console.error('Product not found:', productId);
+        return;
+    }
+    
+    currentProduct = product;
+    
+    // Update product details UI
+    const isImageUrl = product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'));
+    const imageDisplay = isImageUrl 
+        ? `<img src="${product.image}" alt="${product.name}" style="max-width: 100%; height: auto;">` 
+        : product.image;
+    
+    document.getElementById('productDetailsImage').innerHTML = imageDisplay;
+    document.getElementById('productDetailsName').textContent = product.name || 'Product';
+    document.getElementById('productDetailsMake').textContent = product.make || '';
+    document.getElementById('productDetailsPrice').textContent = `₹${product.price || 0}`;
+    document.getElementById('productDetailsUnit').textContent = `per ${product.uomCode || product.unit || 'unit'}`;
+    document.getElementById('productDetailsItemNumber').textContent = product.itemNumber || product.id || 'N/A';
+    
+    // Description
+    const descElement = document.getElementById('productDetailsDescription');
+    if (product.description) {
+        descElement.textContent = product.description;
+        descElement.style.display = 'block';
+    } else {
+        descElement.style.display = 'none';
+    }
+    
+    // Sub-category
+    const subCatMeta = document.getElementById('productDetailsSubCategoryMeta');
+    const subCatSpan = document.getElementById('productDetailsSubCategory');
+    if (product.subCategory) {
+        subCatSpan.textContent = product.subCategory;
+        subCatMeta.style.display = 'flex';
+    } else {
+        subCatMeta.style.display = 'none';
+    }
+    
+    // Specifications
+    const specsContainer = document.getElementById('productDetailsSpecs');
+    if (product.specification && product.specification.trim()) {
+        const specs = product.specification.split('\n').filter(s => s.trim());
+        specsContainer.innerHTML = specs.map(spec => {
+            const cleaned = spec.trim().replace(/^[•\-\*]\s*/, '');
+            return `<div class="spec-item"><i class="fas fa-check-circle"></i><span>${cleaned}</span></div>`;
+        }).join('');
+        document.querySelector('.product-specifications').style.display = 'block';
+    } else {
+        document.querySelector('.product-specifications').style.display = 'none';
+    }
+    
+    // Set initial quantity
+    const itemId = product.itemNumber || product.id;
+    document.getElementById('productDetailsQuantity').textContent = cart[itemId] || 0;
+    
+    // Show the details section
+    hideAllSections();
+    document.getElementById('product-details').classList.remove('hidden');
+}
+
+function showServiceDetails(serviceId) {
+    const service = services.find(s => s.id === serviceId);
+    if (!service) {
+        showToast('Service not found', 'error');
+        return;
+    }
+    
+    // Update service details
+    document.getElementById('serviceDetailsTitle').textContent = service.title;
+    document.getElementById('serviceDetailsDescription').textContent = service.description;
+    
+    // Handle icon display
+    const iconContainer = document.getElementById('serviceDetailsImageContainer');
+    const isImageUrl = service.icon && (service.icon.startsWith('http://') || service.icon.startsWith('https://') || service.icon.startsWith('data:'));
+    if (isImageUrl) {
+        iconContainer.innerHTML = `<img src="${service.icon}" alt="${service.title}" style="width: 100%; max-width: 300px; height: auto; object-fit: contain;">`;
+    } else {
+        iconContainer.innerHTML = `<i class="fas ${service.icon || 'fa-cogs'}" id="serviceDetailsIcon" style="font-size: 120px; color: #1E40AF;"></i>`;
+    }
+    
+    // Display detailed description if available (shown first)
+    const detailedDescSection = document.getElementById('serviceDetailedDescSection');
+    const detailedDescContainer = document.getElementById('serviceDetailsDetailedDesc');
+    if (service.detailedDescription && service.detailedDescription.trim()) {
+        detailedDescContainer.textContent = service.detailedDescription;
+        detailedDescSection.style.display = 'block';
+    } else {
+        detailedDescSection.style.display = 'none';
+    }
+    
+    // Display key features if available (shown after description)
+    const specsSection = document.getElementById('serviceSpecsSection');
+    const specsContainer = document.getElementById('serviceDetailsSpecs');
+    if (service.specification && service.specification.trim()) {
+        const specs = service.specification.split('\n').filter(s => s.trim());
+        specsContainer.innerHTML = specs.map(spec => {
+            const cleaned = spec.trim().replace(/^[•\-\*]\s*/, '');
+            return `<div class="spec-item"><i class="fas fa-check-circle"></i><span>${cleaned}</span></div>`;
+        }).join('');
+        specsSection.style.display = 'block';
+    } else {
+        specsSection.style.display = 'none';
+    }
+    
+    // Show the details section
+    hideAllSections();
+    document.getElementById('service-details-page').classList.remove('hidden');
+}
+
+function showSolutionDetails(solutionId) {
+    const solution = solutions.find(s => s.id === solutionId);
+    if (!solution) {
+        showToast('Solution not found', 'error');
+        return;
+    }
+    
+    // Update solution details
+    document.getElementById('solutionDetailsTitle').textContent = solution.title;
+    document.getElementById('solutionDetailsDescription').textContent = solution.description;
+    
+    // Handle icon display
+    const iconContainer = document.getElementById('solutionDetailsImageContainer');
+    const isImageUrl = solution.icon && (solution.icon.startsWith('http://') || solution.icon.startsWith('https://') || solution.icon.startsWith('data:'));
+    if (isImageUrl) {
+        iconContainer.innerHTML = `<img src="${solution.icon}" alt="${solution.title}" style="width: 100%; max-width: 300px; height: auto; object-fit: contain;">`;
+    } else {
+        iconContainer.innerHTML = `<i class="fas ${solution.icon || 'fa-lightbulb'}" id="solutionDetailsIcon" style="font-size: 120px; color: #1E40AF;"></i>`;
+    }
+    
+    // Display detailed description if available (shown first)
+    const detailedDescSection = document.getElementById('solutionDetailedDescSection');
+    const detailedDescContainer = document.getElementById('solutionDetailsDetailedDesc');
+    if (solution.detailedDescription && solution.detailedDescription.trim()) {
+        detailedDescContainer.textContent = solution.detailedDescription;
+        detailedDescSection.style.display = 'block';
+    } else {
+        detailedDescSection.style.display = 'none';
+    }
+    
+    // Display highlights if available (shown after description)
+    const specsSection = document.getElementById('solutionSpecsSection');
+    const specsContainer = document.getElementById('solutionDetailsSpecs');
+    if (solution.specification && solution.specification.trim()) {
+        const specs = solution.specification.split('\n').filter(s => s.trim());
+        specsContainer.innerHTML = specs.map(spec => {
+            const cleaned = spec.trim().replace(/^[•\-\*]\s*/, '');
+            return `<div class="spec-item"><i class="fas fa-check-circle"></i><span>${cleaned}</span></div>`;
+        }).join('');
+        specsSection.style.display = 'block';
+    } else {
+        specsSection.style.display = 'none';
+    }
+    
+    // Show the details section
+    hideAllSections();
+    document.getElementById('solution-details-page').classList.remove('hidden');
+}
+
+function showCatalogFromDetails() {
+    hideAllSections();
+    document.getElementById('catalog').classList.remove('hidden');
+}
+
+function decreaseProductQuantity() {
+    if (!currentProduct) return;
+    const productId = currentProduct.itemNumber || currentProduct.id;
+    if (cart[productId] && cart[productId] > 0) {
+        cart[productId]--;
+        if (cart[productId] === 0) {
+            delete cart[productId];
+        }
+        saveCart();
+        updateCartBadges();
+        document.getElementById('productDetailsQuantity').textContent = cart[productId] || 0;
+    }
+}
+
+function increaseProductQuantity() {
+    if (!currentProduct) return;
+    const productId = currentProduct.itemNumber || currentProduct.id;
+    cart[productId] = (cart[productId] || 0) + 1;
+    saveCart();
+    updateCartBadges();
+    document.getElementById('productDetailsQuantity').textContent = cart[productId];
+}
+
+function addToCartFromDetails() {
+    if (!currentProduct) return;
+    const productId = currentProduct.itemNumber || currentProduct.id;
+    const currentQty = cart[productId] || 0;
+    
+    if (currentQty === 0) {
+        // If quantity is 0, add 1
+        cart[productId] = 1;
+        document.getElementById('productDetailsQuantity').textContent = 1;
+    }
+    
+    saveCart();
+    updateCartBadges();
+    showToast(`${currentProduct.name} added to cart!`);
+}
