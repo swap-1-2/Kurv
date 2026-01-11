@@ -198,7 +198,12 @@ async function loadSolutionsFromFirestore() {
         console.log('📋 Solutions:', solutions);
         
         if (solutions.length === 0) {
-            console.warn('⚠️ No solutions found in Firestore! Please add solutions via admin panel.');
+            console.warn('⚠️ No solutions found in Firestore! Using default solutions.');
+            solutions = [
+                { id: 'solution1', title: 'Custom Manufacturing', description: 'Tailored manufacturing solutions for your specific requirements', icon: 'fa-cog' },
+                { id: 'solution2', title: 'Supply Chain Management', description: 'Streamlined supply chain and logistics management', icon: 'fa-box' },
+                { id: 'solution3', title: 'Technical Support', description: '24/7 technical support and maintenance services', icon: 'fa-headset' }
+            ];
         }
         
         // Render solutions on the page
@@ -223,7 +228,12 @@ async function loadServicesFromFirestore() {
         console.log('📋 Services:', services);
         
         if (services.length === 0) {
-            console.warn('⚠️ No services found in Firestore! Please add services via admin panel.');
+            console.warn('⚠️ No services found in Firestore! Using default services.');
+            services = [
+                { id: 'service1', title: 'Manufacturing Solutions', description: 'Comprehensive manufacturing solutions for industrial needs', icon: 'fa-industry' },
+                { id: 'service2', title: 'Trading & Distribution', description: 'Efficient trading and distribution services', icon: 'fa-truck' },
+                { id: 'service3', title: 'Quality Assurance', description: 'Rigorous quality control and assurance processes', icon: 'fa-check-circle' }
+            ];
         }
         
         // Render services on the page
