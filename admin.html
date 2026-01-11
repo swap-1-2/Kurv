@@ -19,7 +19,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
+            background: linear-gradient(135deg, #20BBBE 0%, #1A9A9D 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -57,7 +57,7 @@
         }
         
         .stat-card {
-            background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
+            background: linear-gradient(135deg, #F57B20 0%, #D66A1A 100%);
             padding: 25px;
             border-radius: 15px;
             color: white;
@@ -116,9 +116,9 @@
         }
         
         .tab-btn.active {
-            background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
+            background: linear-gradient(135deg, #F57B20 0%, #D66A1A 100%);
             color: white;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(245, 123, 32, 0.4);
         }
         
         .tab-btn i {
@@ -190,8 +190,8 @@
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #3B82F6;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #20BBBE;
+            box-shadow: 0 0 0 3px rgba(32, 187, 190, 0.1);
         }
         
         .form-group textarea {
@@ -213,25 +213,26 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
+            background: linear-gradient(135deg, #F57B20 0%, #D66A1A 100%);
             color: white;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 5px 15px rgba(245, 123, 32, 0.3);
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 25px rgba(245, 123, 32, 0.4);
         }
         
         .btn-secondary {
-            background: #48bb78;
+            background: #20BBBE;
             color: white;
-            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.3);
+            box-shadow: 0 5px 15px rgba(32, 187, 190, 0.3);
         }
         
         .btn-secondary:hover {
+            background: #1A9A9D;
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
+            box-shadow: 0 8px 25px rgba(32, 187, 190, 0.4);
         }
         
         .btn-danger {
@@ -255,7 +256,7 @@
         
         .data-table h3 {
             padding: 30px;
-            background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
+            background: linear-gradient(135deg, #20BBBE 0%, #1A9A9D 100%);
             color: white;
             font-size: 24px;
             display: flex;
@@ -687,13 +688,12 @@
                                 <option value="">Select Category</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Product Name</label>
-                            <input type="text" id="productName" placeholder="e.g., Organic Banana">
-                        </div>
-                        <div class="form-group">
-                            <label>Short Description</label>
-                            <input type="text" id="productSubCategory" placeholder="e.g., Fresh Fruits, Citrus">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Product Name & Description</label>
+                            <textarea id="productName" rows="2" placeholder="e.g., Organic Banana - Fresh, hand-picked fruits from local farms"></textarea>
+                            <small style="color: #666; margin-top: 5px; display: block;">
+                                Enter the product name followed by a brief description
+                            </small>
                         </div>
                         <div class="form-group">
                             <label>Make</label>
@@ -758,7 +758,6 @@
                             <tr>
                                 <th>Item Number</th>
                                 <th>Category</th>
-                                <th>Sub Category</th>
                                 <th>Name</th>
                                 <th>Make</th>
                                 <th>Specification</th>
@@ -770,7 +769,7 @@
                         </thead>
                         <tbody id="productsTableBody">
                             <tr>
-                                <td colspan="10" class="loading-spinner">
+                                <td colspan="9" class="loading-spinner">
                                     <div class="spinner"></div>
                                     <p style="margin-top: 15px;">Loading products...</p>
                                 </td>
