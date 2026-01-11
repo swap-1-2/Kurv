@@ -471,7 +471,6 @@ async function loadProducts() {
                 <tr>
                     <td data-label="Item Number"><strong>${product.itemNumber || product.id}</strong></td>
                     <td data-label="Category"><span class="status-badge" style="background: #3B82F6; color: white;">${product.category || '-'}</span></td>
-                    <td data-label="Sub Category">${product.subCategory || '-'}</td>
                     <td data-label="Name">${product.name || '-'}</td>
                     <td data-label="Make">${product.make || '-'}</td>
                     <td data-label="Specification">${product.specification || '-'}</td>
@@ -523,7 +522,6 @@ async function saveProduct(event) {
     const productData = {
         itemNumber: itemNumber,
         category: document.getElementById('productCategory').value || '',
-        subCategory: document.getElementById('productSubCategory').value.trim() || '',
         name: document.getElementById('productName').value.trim() || '',
         make: document.getElementById('productMake').value.trim() || '',
         specification: document.getElementById('productSpecification').value.trim() || '',
@@ -563,7 +561,6 @@ function editProduct(productId) {
             document.getElementById('productEditId').value = productId;
             document.getElementById('productItemNumber').value = product.itemNumber || product.id || '';
             document.getElementById('productCategory').value = product.category || '';
-            document.getElementById('productSubCategory').value = product.subCategory || '';
             document.getElementById('productName').value = product.name || '';
             document.getElementById('productMake').value = product.make || '';
             document.getElementById('productSpecification').value = product.specification || '';

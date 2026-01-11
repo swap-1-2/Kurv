@@ -33,6 +33,87 @@ let viewMode = 'grid'; // 'grid' or 'list'
 let categoryViewMode = 'grid'; // 'grid' or 'list' for categories
 let otpSent = false; // Track if OTP has been sent
 
+// Smooth scroll for navigation links
+document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth scroll offset for fixed header
+    const navLinks = document.querySelectorAll('.nav-link, .dropdown-item');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                // First, ensure the home section is visible
+                const homeSection = document.getElementById('home');
+                if (homeSection && homeSection.classList.contains('hidden')) {
+                    showHome();
+                    // Wait a moment for the section to be visible
+                    setTimeout(() => {
+                        const headerHeight = document.querySelector('.pro-header').offsetHeight;
+                        const targetPosition = targetSection.offsetTop - headerHeight - 40;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }, 100);
+                } else {
+                    const headerHeight = document.querySelector('.pro-header').offsetHeight;
+                    const targetPosition = targetSection.offsetTop - headerHeight - 40;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+    });
+    
+    // Highlight active section on scroll
+    window.addEventListener('scroll', function() {
+        const sections = document.querySelectorAll('.content-section');
+        const scrollPosition = window.scrollY + 100;
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+            const sectionId = section.getAttribute('id');
+            
+            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                navLinks.forEach(link => {
+                    link.style.color = '';
+                    if (link.getAttribute('href') === '#' + sectionId) {
+                        link.style.color = '#1E40AF';
+                        link.style.fontWeight = '600';
+                    } else {
+                        link.style.fontWeight = '500';
+                    }
+                });
+            }
+        });
+    });
+});
+
+// Mobile menu functions
+function toggleMobileMenu() {
+    const mobileNav = document.getElementById('mobileNav');
+    mobileNav.classList.toggle('mobile-active');
+    document.body.style.overflow = mobileNav.classList.contains('mobile-active') ? 'hidden' : '';
+}
+
+function closeMobileMenu() {
+    const mobileNav = document.getElementById('mobileNav');
+    mobileNav.classList.remove('mobile-active');
+    document.body.style.overflow = '';
+}
+
+function handleMobileNav(event) {
+    if (window.innerWidth <= 768) {
+        event.preventDefault();
+        const navItem = event.target.closest('.nav-item-dropdown');
+        navItem.classList.toggle('mobile-open');
+    }
+}
+
 // Debug function for testing
 function testOTP() {
     const storedOTP = localStorage.getItem('temp_otp');
@@ -263,16 +344,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 // Load data from localStorage
 function loadData() {
-    // Load cart
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart && savedCart !== 'undefined') {
-        try {
-            cart = JSON.parse(savedCart);
-        } catch (error) {
-            console.error('Error parsing cart data:', error);
-            cart = {};
-        }
-    }
+    // Clear any old cart data and start fresh
+    localStorage.removeItem('cart');
+    cart = {};
     
     // Load orders
     loadOrders();
@@ -933,6 +1007,7 @@ function showCategory(categoryId) {
 function showCart() {
     hideAllSections();
     document.getElementById('cart').classList.remove('hidden');
+    currentSection = 'cart';
     renderCart();
     updateNavActive('cart');
 }
@@ -944,10 +1019,26 @@ function showOrders() {
 }
 
 function showProfile() {
-    hideAllSections();
-    document.getElementById('profile').classList.remove('hidden');
-    renderProfile();
-    updateNavActive('profile');
+    // Check if we're in the single-page layout (home section visible)
+    const homeSection = document.getElementById('home');
+    if (homeSection && !homeSection.classList.contains('hidden')) {
+        // In single-page layout, just scroll to profile section
+        const profileSection = document.getElementById('profile');
+        if (profileSection) {
+            const headerHeight = document.querySelector('.pro-header')?.offsetHeight || 0;
+            const targetPosition = profileSection.offsetTop - headerHeight - 20;
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+            });
+        }
+    } else {
+        // In multi-section layout (catalog mode), hide other sections
+        hideAllSections();
+        document.getElementById('profile').classList.remove('hidden');
+        renderProfile();
+        updateNavActive('profile');
+    }
 }
 
 function showAddress() {
@@ -956,6 +1047,9 @@ function showAddress() {
     
     hideAllSections();
     document.getElementById('address').classList.remove('hidden');
+    
+    // Scroll to top of page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     
     // Add real-time validation listeners
     const nameInput = document.getElementById('fullName');
@@ -1315,14 +1409,16 @@ function increaseQuantity(productId) {
     saveCart();
     updateCartBadges();
     
-    // Update display based on current section
-    if (currentSection === 'catalog') {
-        renderCatalog();
-    } else if (currentSection === 'cart') {
+    // If we're on the cart page, re-render it
+    if (currentSection === 'cart') {
         renderCart();
+    } else {
+        // Update the specific input field on other pages
+        const input = document.querySelector(`input[onchange*="${productId}"]`);
+        if (input) {
+            input.value = cart[productId];
+        }
     }
-    
-    showToast('Item added to cart');
 }
 
 function decreaseQuantity(productId) {
@@ -1334,14 +1430,16 @@ function decreaseQuantity(productId) {
         saveCart();
         updateCartBadges();
         
-        // Update display based on current section
-        if (currentSection === 'catalog') {
-            renderCatalog();
-        } else if (currentSection === 'cart') {
+        // If we're on the cart page, re-render it
+        if (currentSection === 'cart') {
             renderCart();
+        } else {
+            // Update the specific input field on other pages
+            const input = document.querySelector(`input[onchange*="${productId}"]`);
+            if (input) {
+                input.value = cart[productId] || 0;
+            }
         }
-        
-        showToast('Item removed from cart');
     }
 }
 
@@ -1350,21 +1448,19 @@ function updateQuantity(productId, newQuantity) {
     
     // Validate quantity
     if (isNaN(quantity) || quantity < 0) {
-        showToast('Please enter a valid quantity (0 or more)');
-        if (currentSection === 'catalog') {
-            renderCatalog();
-        } else if (currentSection === 'cart') {
-            renderCart();
+        // Update the input field to show 0
+        const input = document.querySelector(`input[onchange*="${productId}"]`);
+        if (input) {
+            input.value = cart[productId] || 0;
         }
         return;
     }
     
     if (quantity > 99999999) {
-        showToast('Maximum quantity is 99,999,999');
-        if (currentSection === 'catalog') {
-            renderCatalog();
-        } else if (currentSection === 'cart') {
-            renderCart();
+        // Reset to previous value
+        const input = document.querySelector(`input[onchange*="${productId}"]`);
+        if (input) {
+            input.value = cart[productId] || 0;
         }
         return;
     }
@@ -1375,35 +1471,27 @@ function updateQuantity(productId, newQuantity) {
         saveCart();
         updateCartBadges();
         
-        // Update display
-        if (currentSection === 'catalog') {
-            renderCatalog();
-        } else if (currentSection === 'cart') {
-            renderCart();
+        // Update the input field
+        const input = document.querySelector(`input[onchange*="${productId}"]`);
+        if (input) {
+            input.value = 0;
         }
         
-        showToast('Item removed from cart');
+        // Only re-render if in cart section
+        if (currentSection === 'cart') {
+            renderCart();
+        }
         return;
     }
     
     // Update cart with new quantity
-    const oldQuantity = cart[productId] || 0;
     cart[productId] = quantity;
     saveCart();
     updateCartBadges();
     
-    // Update display
-    if (currentSection === 'catalog') {
-        renderCatalog();
-    } else if (currentSection === 'cart') {
+    // Only re-render cart if in cart section
+    if (currentSection === 'cart') {
         renderCart();
-    }
-    
-    // Show appropriate message
-    if (oldQuantity === 0) {
-        showToast('Item added to cart');
-    } else {
-        showToast('Quantity updated');
     }
 }
 
@@ -1540,11 +1628,24 @@ async function confirmOrder() {
     }
     phoneError.style.display = 'none';
     
+    // Get and validate Company Name
+    const companyNameInput = document.getElementById('companyName');
+    const companyError = document.getElementById('companyError');
+    const companyName = companyNameInput.value.trim();
+    
+    // Validate company name
+    if (!companyName) {
+        companyError.textContent = 'Company name is required';
+        companyError.style.display = 'block';
+        companyNameInput.focus();
+        return;
+    }
+    companyError.style.display = 'none';
+    
     // Store email for order
     window.customerEmail = customerEmail;
     
-    // Get address form values (optional fields)
-    const companyName = document.getElementById('companyName').value.trim();
+    // Get address form values
     const gstin = document.getElementById('gstin').value.trim();
     const streetAddress = document.getElementById('streetAddress').value.trim();
     const city = document.getElementById('city').value.trim();
@@ -1560,7 +1661,7 @@ async function confirmOrder() {
     currentAddress = {
         fullName: fullName,
         phone: '+91' + deliveryPhone,
-        companyName: companyName || 'Not provided',
+        companyName: companyName,
         gstin: gstin || 'Not provided',
         streetAddress: streetAddress || 'Not provided',
         city: city || 'Not provided',
@@ -1589,9 +1690,24 @@ async function confirmOrder() {
     console.log('=== CREATING ORDER ===');
     console.log('window.additionalNotes:', window.additionalNotes);
     
+    // Create order with numeric ID and IST timestamp
+    const numericId = Date.now();
+    const istDate = new Date().toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+    
     const order = {
-        id: 'ORD-' + Date.now(),
+        id: 'ENQ-' + numericId,
+        numericId: numericId,
         date: new Date().toISOString(),
+        dateIST: istDate,
         items: orderItems,
         total: total.toFixed(2),
         status: 'confirmed',
@@ -1678,9 +1794,9 @@ async function sendEmailViaEmailJS(order) {
         ).join('');
         
         // Create CSV-formatted data for easy Excel import
-        const csvHeader = 'Item Number,Category,Product Name,Make,Specification,Unit Price,Quantity,Total Price,UOM\n';
+        const csvHeader = 'Item Code,Category,Product Name,Make,Specification,Unit Price,Quantity,Total Price,UOM\n';
         const csvData = order.items.map(item => {
-            const itemNumber = item.itemNumber || '';
+            const itemCode = item.itemNumber || '';
             const category = item.category || '';
             const name = (item.name || '').replace(/,/g, ';'); // Replace commas to avoid CSV issues
             const make = item.make || '';
@@ -1690,7 +1806,7 @@ async function sendEmailViaEmailJS(order) {
             const total = price * qty;
             const uom = item.uomCode || '';
             
-            return `${itemNumber},${category},"${name}",${make},"${spec}",${price},${qty},${total},${uom}`;
+            return `${itemCode},${category},"${name}",${make},"${spec}",${price},${qty},${total},${uom}`;
         }).join('\n');
         
         const csvContent = csvHeader + csvData;
@@ -1699,8 +1815,7 @@ async function sendEmailViaEmailJS(order) {
         
         // Create plain text table format for better email readability
         const textTable = order.items.map((item, index) => 
-            `${index + 1}. ${item.itemNumber || 'N/A'} - ${item.name}
-   Make: ${item.make || 'N/A'} | Qty: ${item.quantity} ${item.uomCode || ''} | Price: ₹${item.price} | Total: ₹${item.price * item.quantity}`
+            `${index + 1}. ${item.itemNumber || 'N/A'} - ${item.name}\n   Make: ${item.make || 'N/A'} | Qty: ${item.quantity} ${item.uomCode || ''} | Price: ₹${item.price} | Total: ₹${item.price * item.quantity}`
         ).join('\n\n');
         
         // Format address
@@ -1711,23 +1826,26 @@ ${order.address.city}, ${order.address.postalCode}
 ${order.address.landmark ? 'Landmark: ' + order.address.landmark : ''}`;
         
         const templateParams = {
-            order_id: order.id,
-            order_total: '₹' + order.total,
-            order_items_html: orderItemsHtml,
-            order_items_text: textTable,
-            order_csv: fullCsvContent,
+            enquiry_id: order.id,
+            enquiry_total: '₹' + order.total,
+            enquiry_items_html: orderItemsHtml,
+            enquiry_items_text: textTable,
+            enquiry_csv: fullCsvContent,
             customer_phone: order.customerPhone,
             customer_name: order.address.fullName,
             customer_email: order.customerEmail,
-            company_name: order.address.companyName || 'N/A',
+            company_name: order.address.companyName,
             gstin: order.address.gstin || 'N/A',
-            order_date: new Date(order.date).toLocaleString('en-IN', { 
+            enquiry_date: new Date(order.date).toLocaleString('en-IN', { 
                 dateStyle: 'medium', 
-                timeStyle: 'short' 
+                timeStyle: 'short',
+                timeZone: 'Asia/Kolkata'
             }),
             delivery_address: addressText,
             item_count: order.items.length,
-            additional_notes: order.additionalNotes || 'None'
+            additional_information: order.additionalNotes || 'None',
+            subject: 'Enquiry received',
+            closing_message: 'Thank you for choosing Swarup'
         };
         
         // Debug log to verify additional notes
@@ -1848,12 +1966,25 @@ function showProductDetails(productId) {
     currentProduct = product;
     
     // Update product details UI
-    const isImageUrl = product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'));
+    const isImageUrl = product.image && (
+        product.image.startsWith('http://') || 
+        product.image.startsWith('https://') || 
+        product.image.startsWith('data:image/')
+    );
     const imageDisplay = isImageUrl 
         ? `<img src="${product.image}" alt="${product.name}" style="max-width: 100%; height: auto;">` 
         : product.image;
     
     document.getElementById('productDetailsImage').innerHTML = imageDisplay;
+    
+    // Add click event for image zoom (only for actual images, not emojis)
+    if (isImageUrl) {
+        const imageElement = document.querySelector('#productDetailsImage img');
+        if (imageElement) {
+            imageElement.onclick = () => openImageZoom(product.image);
+        }
+    }
+    
     document.getElementById('productDetailsName').textContent = product.name || 'Product';
     document.getElementById('productDetailsMake').textContent = product.make || '';
     document.getElementById('productDetailsPrice').textContent = `₹${product.price || 0}`;
@@ -1862,21 +1993,12 @@ function showProductDetails(productId) {
     
     // Description
     const descElement = document.getElementById('productDetailsDescription');
+    const descSection = descElement.closest('.product-description-section');
     if (product.description) {
         descElement.textContent = product.description;
-        descElement.style.display = 'block';
+        if (descSection) descSection.style.display = 'block';
     } else {
-        descElement.style.display = 'none';
-    }
-    
-    // Sub-category
-    const subCatMeta = document.getElementById('productDetailsSubCategoryMeta');
-    const subCatSpan = document.getElementById('productDetailsSubCategory');
-    if (product.subCategory) {
-        subCatSpan.textContent = product.subCategory;
-        subCatMeta.style.display = 'flex';
-    } else {
-        subCatMeta.style.display = 'none';
+        if (descSection) descSection.style.display = 'none';
     }
     
     // Specifications
@@ -2042,3 +2164,35 @@ function addToCartFromDetails() {
     updateCartBadges();
     showToast(`${currentProduct.name} added to cart!`);
 }
+
+// Image zoom functionality
+function openImageZoom(imageSrc) {
+    const modal = document.getElementById('imageZoomModal');
+    const zoomedImage = document.getElementById('zoomedImage');
+    zoomedImage.src = imageSrc;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageZoom(event) {
+    // Close if clicking on the modal background, image, or close button
+    if (event.target.id === 'imageZoomModal' || 
+        event.target.id === 'zoomedImage' ||
+        event.target.classList.contains('image-zoom-close') ||
+        event.target.classList.contains('fa-times')) {
+        const modal = document.getElementById('imageZoomModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Close zoom modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('imageZoomModal');
+        if (modal.classList.contains('active')) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+});

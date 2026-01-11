@@ -25,17 +25,37 @@
             <div class="brand-section">
                 <img src="swarup-logo.png" alt="Swarup" class="brand-logo">
                 <div class="brand-text">
-                    <h1>SWARUP</h1>
-                    <p style="font-size: 0.75rem; margin-top: -5px;">Solutions</p>
+                    <h1 style="white-space: nowrap;">SWARUP Solutions</h1>
                 </div>
             </div>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav class="main-nav" id="mobileNav">
+                <button class="mobile-menu-close" onclick="toggleMobileMenu()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="nav-item-dropdown">
+                    <a href="#about" class="nav-link" onclick="handleMobileNav(event)">About Us <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="#about" class="dropdown-item" onclick="closeMobileMenu()">About Us</a>
+                        <a href="#experience" class="dropdown-item" onclick="closeMobileMenu()">Experience & Achievements</a>
+                        <a href="#vision" class="dropdown-item" onclick="closeMobileMenu()">Vision & Mission</a>
+                        <a href="#why-us" class="dropdown-item" onclick="closeMobileMenu()">Why Choose Us</a>
+                    </div>
+                </div>
+                <a href="#services" class="nav-link" onclick="closeMobileMenu()">Services</a>
+                <a href="#products" class="nav-link" onclick="closeMobileMenu()">Products</a>
+                <a href="#trading-showcase" class="nav-link" onclick="closeMobileMenu()">Trading</a>
+                <a href="#contact" class="nav-link" onclick="closeMobileMenu()">Contact Us</a>
+            </nav>
             <div class="header-actions" style="display: flex; align-items: center; gap: 0.75rem;">
                 <button class="cart-btn" onclick="showAddress()" style="display: flex; align-items: center; gap: 0.3rem;">
                     <i class="fas fa-paper-plane"></i>
                     <span>Enquiry</span>
                 </button>
                 <button class="cart-btn" onclick="showCart()">
-                    <i class="fas fa-shopping-cart"></i>
+                    <i class="fas fa-clipboard-list"></i>
                     <span class="cart-count" id="cartBadge">0</span>
                 </button>
             </div>
@@ -43,67 +63,297 @@
     </header>
 
     <div class="container" id="app">
-        <!-- Home Page with Services, Trading, Solutions -->
+        <!-- Single Page Application -->
         <section id="home" class="section">
-            <div class="hero-banner">
-                <div class="hero-content" style="display: flex; align-items: center; gap: 2rem;">
-                    <img src="swarup-logo.png" alt="SWARUP Logo" style="width: 120px; height: 120px; object-fit: contain;">
-                    <div>
-                        <h1 class="hero-title" style="margin-bottom: 0.2rem;">SWARUP</h1>
-                        <p class="hero-description" style="font-size: 1rem; font-weight: 400; color: #ffffff; opacity: 0.95; letter-spacing: 2px; text-transform: uppercase; margin-top: 0;">Solutions</p>
+            <!-- Scrolling Tagline Banner -->
+            <div class="scrolling-banner">
+                <div class="banner-content">
+                    <span class="banner-text">Where reliability meets innovation, excellence follows.</span>
+                    <span class="banner-separator">•</span>
+                    <span class="banner-text">Where reliability meets innovation, excellence follows.</span>
+                    <span class="banner-separator">•</span>
+                    <span class="banner-text">Where reliability meets innovation, excellence follows.</span>
+                    <span class="banner-separator">•</span>
+                    <span class="banner-text">Where reliability meets innovation, excellence follows.</span>
+                    <span class="banner-separator">•</span>
+                </div>
+            </div>
+
+            <!-- Trading Showcase Section -->
+            <div id="trading-showcase" class="content-section" style="padding-top: 2rem;">
+                <div class="section-header">
+                    <h2 class="section-title">Trading</h2>
+                    <div class="title-underline"></div>
+                </div>
+                <div class="services-container">
+                    <!-- Trading Section -->
+                    <div class="service-card" onclick="showCategories()">
+                        <div class="service-icon">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <h2>Product Catalog</h2>
+                        <p>Browse our extensive catalog of cable terminals, connectors, and accessories</p>
+                        <button class="explore-btn">View Products <i class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
 
-            <div class="services-container">
-                <!-- Services Section -->
-                <div class="service-card" onclick="showServicesDetails()">
-                    <div class="service-icon">
-                        <i class="fas fa-tools"></i>
+            <!-- About Us Section -->
+            <div id="about" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">About Us</h2>
+                    <div class="title-underline"></div>
+                </div>
+                <div class="content-box">
+                    <div class="about-content">
+                        <div class="about-text">
+                            <p class="lead-text">Rupesh Bharat Joshi is the founding member of Swati Enterprises, an accomplished Electrical Engineering professional with over 20 years of experience in Design, Marketing and Concept-based Solution selling with a strong specialization in LV Switchboards and Power Quality Solutions.</p>
+                            <p><strong>Swarup</strong> means "Self Appearance" representing Authenticity, Originality, and complete Alignment with True Purpose.</p>
+                            <p>In alignment with the Swarup brand name, Swati Enterprises is a trusted partner in Power Quality Solutions, delivering Consulting, Design and advanced Engineering Support with a focus on Reliability, Safety, and Innovation.</p>
+                        </div>
                     </div>
-                    <h2>Services</h2>
-                    <p>Professional installation, maintenance, and technical support for all our products</p>
-                    <button class="explore-btn">Learn More <i class="fas fa-arrow-right"></i></button>
                 </div>
 
-                <!-- Trading Section -->
-                <div class="service-card" onclick="showCategories()">
-                    <div class="service-icon">
-                        <i class="fas fa-shopping-bag"></i>
+                <!-- Experience & Achievements Subsection -->
+                <div id="experience" class="subsection">
+                    <div class="section-header" style="margin-top: 3rem;">
+                        <h3 class="subsection-title">Experience & Achievements</h3>
+                        <div class="title-underline"></div>
                     </div>
-                    <h2>Trading</h2>
-                    <p>Browse our extensive catalog of cable terminals, connectors, and accessories</p>
-                    <button class="explore-btn">View Products <i class="fas fa-arrow-right"></i></button>
+                    <div class="achievements-grid">
+                        <div class="achievement-card">
+                            <div class="achievement-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <h3>20+ Years</h3>
+                            <p>Industry Experience</p>
+                        </div>
+                        <div class="achievement-card">
+                            <div class="achievement-icon">
+                                <i class="fas fa-drafting-compass"></i>
+                            </div>
+                            <h3>Expertise</h3>
+                            <p>Design of PF Correction systems and Power Distribution Panels</p>
+                        </div>
+                        <div class="achievement-card">
+                            <div class="achievement-icon">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <h3>50+ Type Tests</h3>
+                            <p>Performed at CPRI & ERDA</p>
+                        </div>
+                        <div class="achievement-card">
+                            <div class="achievement-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <h3>100+ Projects</h3>
+                            <p>Successfully Executed</p>
+                        </div>
+                        <div class="achievement-card">
+                            <div class="achievement-icon">
+                                <i class="fas fa-industry"></i>
+                            </div>
+                            <h3>Notable Projects</h3>
+                            <p>Executed in various Segments & Industries</p>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Solutions Section -->
-                <div class="service-card" onclick="showSolutionsDetails()">
-                    <div class="service-icon">
-                        <i class="fas fa-lightbulb"></i>
+                <!-- Why Choose Us Subsection -->
+                <div id="why-us" class="subsection">
+                    <div class="section-header" style="margin-top: 3rem;">
+                        <h3 class="subsection-title">Why Choose Us?</h3>
+                        <div class="title-underline"></div>
                     </div>
-                    <h2>Solutions</h2>
-                    <p>Custom solutions tailored to your specific industrial requirements</p>
-                    <button class="explore-btn">Discover <i class="fas fa-arrow-right"></i></button>
+                    <div class="why-us-content">
+                        <div class="why-item">
+                            <div class="why-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <h3>Deep Technical Expertise</h3>
+                            <p>Over 20 years of specialized experience in electrical engineering solutions</p>
+                        </div>
+                        <div class="why-item">
+                            <div class="why-icon">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <h3>Strong OEM Partnerships</h3>
+                            <p>Collaborations with reputed OEMs like TDK, InPhase, Quality Power, Schneider, Finolex, Raychem RPG, Vertiv</p>
+                        </div>
+                        <div class="why-item">
+                            <div class="why-icon">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <h3>Customer-First Approach</h3>
+                            <p>Tailored solutions designed specifically for your requirements</p>
+                        </div>
+                        <div class="why-item">
+                            <div class="why-icon">
+                                <i class="fas fa-hands-helping"></i>
+                            </div>
+                            <h3>End-to-End Support</h3>
+                            <p>Complete support from Consulting to Execution</p>
+                        </div>
+                        <div class="why-item">
+                            <div class="why-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Proven Track Record</h3>
+                            <p>100+ successfully executed projects with reliable solutions</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vision & Mission Subsection -->
+                <div id="vision" class="subsection">
+                    <div class="section-header" style="margin-top: 3rem;">
+                        <h3 class="subsection-title">Vision & Mission</h3>
+                        <div class="title-underline"></div>
+                    </div>
+                    <div class="vision-mission-grid">
+                        <div class="vm-card">
+                            <div class="vm-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <h3>Our Vision</h3>
+                            <p>To be a preferred partner in delivering innovative electrical engineering solutions that empower industries and drive sustainable growth.</p>
+                        </div>
+                        <div class="vm-card">
+                            <div class="vm-icon">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <h3>Our Mission</h3>
+                            <p>To provide customer-centric, efficient, and safe electrical solutions through consulting, design, and advanced technology partnerships.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Company Info Section -->
-            <div class="company-highlights">
-                <div class="highlight-item">
-                    <i class="fas fa-award"></i>
-                    <h3>Quality Products</h3>
-                    <p>Premium industrial components</p>
+            <!-- Services & Solutions Section -->
+            <div id="services" class="content-section alt-bg">
+                <div class="section-header">
+                    <h2 class="section-title">Services</h2>
+                    <div class="title-underline"></div>
                 </div>
-                <div class="highlight-item">
-                    <i class="fas fa-bolt"></i>
-                    <h3>Fast Response</h3>
-                    <p>Quick response to your queries</p>
+                <div class="services-list">
+                    <div class="service-item">
+                        <div class="service-icon-small"><i class="fas fa-chart-line"></i></div>
+                        <div class="service-content">
+                            <h3>Power Quality Surveys & Solutions</h3>
+                            <p>Assessing and improving reliability and efficiency</p>
+                        </div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-icon-small"><i class="fas fa-cogs"></i></div>
+                        <div class="service-content">
+                            <h3>Installation & Commissioning</h3>
+                            <p>Execution of site activities to commission the supplied Solution and validate its Performance</p>
+                        </div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-icon-small"><i class="fas fa-network-wired"></i></div>
+                        <div class="service-content">
+                            <h3>Electrical Power Distribution Network Design</h3>
+                            <p>Safe, Optimized, and future-ready systems</p>
+                        </div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-icon-small"><i class="fas fa-bolt"></i></div>
+                        <div class="service-content">
+                            <h3>Load Optimization Studies</h3>
+                            <p>Identifying opportunities for energy savings</p>
+                        </div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-icon-small"><i class="fas fa-file-alt"></i></div>
+                        <div class="service-content">
+                            <h3>Documentation of Existing Electrical Network</h3>
+                            <p>Accurate single-line diagrams for better control and planning</p>
+                        </div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-icon-small"><i class="fas fa-clipboard-check"></i></div>
+                        <div class="service-content">
+                            <h3>Design & Testing Support to OEMs for LT Switchboard</h3>
+                            <p>Facilitating Designs, Type Testing & Certifications</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="highlight-item">
-                    <i class="fas fa-user-tie"></i>
-                    <h3>Expert Advice</h3>
-                    <p>Professional consultation available</p>
+            </div>
+
+            <!-- Products Manufactured Section -->
+            <div id="products" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Products Manufactured</h2>
+                    <div class="title-underline"></div>
                 </div>
+                <div class="products-grid">
+                    <div class="product-card-custom">
+                        <div class="product-icon-custom">
+                            <i class="fas fa-charging-station"></i>
+                        </div>
+                        <h3>APFC Panels</h3>
+                        <p>Automatic Power Factor Correction Panels – Efficient & Reliable PF improvement with Contactor as a switching Device</p>
+                    </div>
+                    <div class="product-card-custom">
+                        <div class="product-icon-custom">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>RTPFC Panels</h3>
+                        <p>Real-Time Power Factor Correction Panels – Dynamic compensation for critical loads with the Thyristor as a switching Device</p>
+                    </div>
+                    <div class="product-card-custom">
+                        <div class="product-icon-custom">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <h3>Hybrid Panels</h3>
+                        <p>Combined Solution for Reactive Power, PF Correction and/or Harmonics Mitigation</p>
+                    </div>
+                    <div class="product-card-custom">
+                        <div class="product-icon-custom">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3>Tailored Solutions</h3>
+                        <p>Customized as per Project & Industry requirements</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact CTA Section -->
+            <div class="cta-section" id="contact">
+                <h2>Contact Us</h2>
+                <p>Where reliability meets innovation, excellence follows.</p>
+                <div class="contact-info-grid">
+                    <div class="contact-info-item">
+                        <i class="fas fa-phone"></i>
+                        <p>+91 7057059736<br>+91 9890952973</p>
+                    </div>
+                    <div class="contact-info-item">
+                        <i class="fas fa-envelope"></i>
+                        <p>support@swarupsolutions.com</p>
+                    </div>
+                    <div class="contact-info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>Parksyde Business Avenue, S-27, Second Floor,<br>Wadala Pathardi Road, Nashik – 422 010<br>Maharashtra, India</p>
+                    </div>
+                </div>
+                
+                <!-- Google Maps Section -->
+                <div style="margin-top: 2rem; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                    <iframe 
+                        src="https://maps.google.com/maps?q=Parksyde+Business+Avenue+S-27+Wadala+Naka+Nashik+422010+Maharashtra+India&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                        width="100%" 
+                        height="400" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                
+                <button class="explore-btn" onclick="showAddress()" style="margin-top: 2rem;">
+                    <i class="fas fa-paper-plane"></i> Send Enquiry
+                </button>
             </div>
         </section>
 
@@ -113,7 +363,7 @@
                 <button class="back-btn" onclick="showHome()">
                     <i class="fas fa-arrow-left"></i> Back
                 </button>
-                <h1 class="header-title">Our Services</h1>
+                <h1 class="header-title">Services</h1>
             </div>
             <div class="content-wrapper">
                 <div class="service-detail-card">
@@ -221,28 +471,29 @@
                         <div id="productDetailsImage" class="product-image-large"></div>
                     </div>
                     <div class="product-details-info">
-                        <h1 id="productDetailsName" class="product-name"></h1>
-                        <p id="productDetailsMake" class="product-make"></p>
+                        <h1 id="productDetailsName" class="product-name" style="white-space: pre-line;"></h1>
+                        <div class="product-meta">
+                            <div class="meta-item">
+                                <span><strong>Make:</strong> <span id="productDetailsMake"></span></span>
+                            </div>
+                            <div class="meta-item">
+                                <span><strong>Item Number:</strong> <span id="productDetailsItemNumber"></span></span>
+                            </div>
+                        </div>
                         <div class="product-price-section">
                             <span class="product-price" id="productDetailsPrice">₹0.00</span>
                             <span class="product-unit" id="productDetailsUnit"></span>
+                            <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem; font-style: italic;">*Prices are exclusive of taxes</p>
                         </div>
-                        <div id="productDetailsDescription" class="product-description"></div>
                         
                         <div class="product-specifications">
                             <h3><i class="fas fa-list-ul"></i> Specifications</h3>
                             <div id="productDetailsSpecs" class="specs-list"></div>
                         </div>
-                        
-                        <div class="product-meta">
-                            <div class="meta-item">
-                                <i class="fas fa-tag"></i>
-                                <span>Item #: <strong id="productDetailsItemNumber"></strong></span>
-                            </div>
-                            <div class="meta-item" id="productDetailsSubCategoryMeta">
-                                <i class="fas fa-folder"></i>
-                                <span id="productDetailsSubCategory"></span>
-                            </div>
+
+                        <div class="product-description-section">
+                            <h3><i class="fas fa-info-circle"></i> Description</h3>
+                            <div id="productDetailsDescription" class="product-description"></div>
                         </div>
                         
                         <div class="product-actions">
@@ -256,13 +507,21 @@
                                 </button>
                             </div>
                             <button onclick="addToCartFromDetails()" class="btn-add-to-cart">
-                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                                <i class="fas fa-clipboard-list"></i> Add to Enquiry
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
+
+        <!-- Image Zoom Modal -->
+        <div id="imageZoomModal" class="image-zoom-modal" onclick="closeImageZoom(event)">
+            <button class="image-zoom-close" onclick="closeImageZoom(event)">
+                <i class="fas fa-times"></i>
+            </button>
+            <img id="zoomedImage" src="" alt="Zoomed product image">
+        </div>
 
         <!-- Service Details Page -->
         <section id="service-details-page" class="section hidden">
@@ -328,7 +587,7 @@
             </div>
         </section>
 
-        <!-- Cart Section -->
+        <!-- Enquiry Section -->
         <section id="cart" class="section hidden">
             <div class="modern-header">
                 <div class="header-content">
@@ -338,7 +597,7 @@
                     </button>
                 </div>
                 <div>
-                    <h1 class="header-title"><i class="fas fa-shopping-cart"></i> Your Equiry Cart</h1>
+                    <h1 class="header-title"><i class="fas fa-clipboard-list"></i> Your Enquiry</h1>
                     <p class="header-subtitle">Review your items before enquiry</p>
                 </div>
             </div>
@@ -346,6 +605,7 @@
             <div class="cart-summary">
                 <div class="total-amount">
                     <strong>Total: ₹<span id="cartTotal">0.00</span></strong>
+                    <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem; font-style: italic;">*Prices are exclusive of taxes</p>
                 </div>
                 <button onclick="showAddress()" class="btn-primary place-order-btn">
                     <i class="fas fa-arrow-right"></i> Next
@@ -357,7 +617,7 @@
         <section id="address" class="section hidden">
             <div class="modern-header">
                 <div class="header-content">
-                    <button class="back-btn" onclick="showCart()">
+                    <button class="back-btn" onclick="showHome()">
                         <i class="fas fa-arrow-left"></i>
                         Back
                     </button>
@@ -386,21 +646,21 @@
                     </div>
                     <small class="input-error" id="phoneError" style="display: none; color: #ff4757; font-size: 0.85rem; margin-top: 0.25rem;">Please enter a valid 10-digit mobile number</small>
                     
-                    <label for="companyName">Company Name</label>
-                    <input type="text" id="companyName">
+                    <label for="companyName">Company Name *</label>
+                    <input type="text" id="companyName" required>
+                    <small class="input-error" id="companyError" style="display: none; color: #ff4757; font-size: 0.85rem; margin-top: 0.25rem;">Please enter your company name</small>
                     
                     <label for="gstin">GSTIN</label>
                     <input type="text" id="gstin">
                 </div>
                 
                 <div style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
-                    <label for="additionalNotes" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Additional Requirements (Optional)</label>
-                    <textarea id="additionalNotes" rows="4" placeholder="Enter any specific requirements, quantities, or questions..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-family: inherit; resize: vertical;"></textarea>
-                    <small class="input-help" style="color: #666; font-size: 0.85rem; margin-top: 0.5rem; display: block;">Let us know if you need any specific details or have questions</small>
+                    <label for="additionalNotes" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Additional Information <span style="font-size: 0.9rem; color: #666; font-weight: 400;">(Let us know)</span></label>
+                    <textarea id="additionalNotes" rows="4" placeholder="Enter queries and questions about your requirements..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-family: inherit; resize: vertical;"></textarea>
                 </div>
                 
                 <div class="form-section">
-                    <h3>Delivery Address (Optional)</h3>
+                    <h3>Delivery Address</h3>
                     
                     <label for="streetAddress">Street Address</label>
                     <input type="text" id="streetAddress">
@@ -498,18 +758,6 @@
             </div>
         </section>
     </div>
-
-    <!-- Navigation Bar -->
-    <nav class="bottom-nav" id="bottomNav">
-        <button onclick="showHome()" class="nav-item active">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </button>
-        <button onclick="showProfile()" class="nav-item">
-            <i class="fas fa-address-book"></i>
-            <span>Contact Us</span>
-        </button>
-    </nav>
 
     <script src="app.js"></script>
 </body>
